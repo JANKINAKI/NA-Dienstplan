@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#1B2B4B"/>
+<title>NA Dienstplan · UKSH</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#1B2B4B;--navy2:#162240;--navy3:#223358;--navy4:#2A3F6A;--navy5:#324878;
+  --cyan:#4BB8D4;--cyan2:#2FA8C8;--cyan3:#1A8AAA;
+  --white:#FFFFFF;--text2:#A8BACE;--text3:#6A8298;
+  --border:#2E3F62;--border2:#243350;
+  --green:#2ECC71;--red:#E74C3C;--amber:#F39C12;--purple:#9B59B6;
+  --font:'Source Sans 3',sans-serif;--mono:'Source Code Pro',monospace;
+  --r:8px;--r-sm:5px;--nav-h:54px;--bot-h:62px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--navy);color:var(--white);font-size:14px;-webkit-font-smoothing:antialiased}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);background:var(--navy2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px}
+.tlogobox{width:36px;height:36px;border-radius:8px;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--navy2)}
+.tlogo{display:flex;align-items:center;gap:10px}
+.ttitle{font-size:15px;font-weight:600;letter-spacing:-.2px}
+.tsub{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.tspacer{flex:1}
+.trole{font-size:10px;font-weight:700;border-radius:3px;padding:2px 8px;letter-spacing:.3px}
+.trole-assi{background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3)}
+.trole-oa{background:rgba(75,184,212,.15);color:var(--cyan);border:1px solid rgba(75,184,212,.3)}
+.trole-planer{background:rgba(243,156,18,.15);color:var(--amber);border:1px solid rgba(243,156,18,.3)}
+.tmonth{display:flex;align-items:center;gap:5px;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 10px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--mono)}
+.tavatar{width:32px;height:32px;border-radius:50%;background:var(--cyan3);border:1.5px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer}
+.role-sw{position:fixed;top:calc(var(--nav-h)+8px);right:8px;z-index:400;background:var(--navy2);border:1px solid var(--border);border-radius:var(--r);padding:10px;box-shadow:0 4px 20px rgba(0,0,0,.5);display:none;min-width:190px}
+.role-sw.open{display:block}
+.role-sw-title{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.role-opt{padding:8px 12px;border-radius:var(--r-sm);font-size:12px;font-weight:500;cursor:pointer;margin-bottom:4px;border:1px solid var(--border2);transition:all .15s}
+.role-opt:hover{background:var(--navy3)}
+.role-opt.active{border-color:var(--cyan);color:var(--cyan);background:rgba(75,184,212,.08)}
+.main{position:fixed;top:var(--nav-h);bottom:var(--bot-h);left:0;right:0;overflow-y:auto;padding:14px;scroll-behavior:smooth}
+@media(min-width:768px){.main{max-width:960px;margin:0 auto;padding:18px 24px}}
+.botnav{position:fixed;bottom:0;left:0;right:0;z-index:300;height:var(--bot-h);background:var(--navy2);border-top:1px solid var(--border);display:flex}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text3);border:none;background:none;font-family:var(--font);transition:color .15s;position:relative;padding:6px 2px}
+.bni.active{color:var(--cyan)}.bni:hover{color:var(--text2)}
+.bni-icon{font-size:18px;line-height:1}.bni-lbl{font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.bni-badge{position:absolute;top:5px;right:calc(50% - 14px);background:var(--red);color:#fff;border-radius:10px;font-size:8px;font-weight:700;padding:1px 4px;min-width:14px;text-align:center}
+.page{display:none;animation:fi .18s ease}.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+@media(min-width:600px){.modal-overlay{align-items:center}}
+.modal{background:var(--navy2);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:16px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto}
+@media(min-width:600px){.modal{border-radius:var(--r)}}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px}
+.st{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+.sl{font-size:12px;color:var(--cyan);background:none;border:none;cursor:pointer;font-family:var(--font);font-weight:500}
+.ml{font-size:10px;color:var(--text3);margin-bottom:8px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px}
+.card{background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.lr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2)}.lr:last-child{border-bottom:none}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+@media(min-width:600px){.sg{grid-template-columns:repeat(4,1fr)}}
+.sb{background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.sv{font-size:26px;font-weight:300;font-family:var(--mono);line-height:1;margin-bottom:3px}
+.su{font-size:13px}.sl2{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.sb.cc{border-left:3px solid var(--cyan)}.sb.cg{border-left:3px solid var(--green)}.sb.ca{border-left:3px solid var(--amber)}.sb.cr{border-left:3px solid var(--red)}
+.tag{display:inline-block;border-radius:3px;font-size:10px;font-weight:700;padding:2px 7px;letter-spacing:.3px}
+.tag-i{background:rgba(75,184,212,.15);color:var(--cyan);border:1px solid rgba(75,184,212,.3)}
+.tag-n{background:rgba(155,89,182,.15);color:var(--purple);border:1px solid rgba(155,89,182,.3)}
+.tag-u{background:rgba(243,156,18,.15);color:var(--amber);border:1px solid rgba(243,156,18,.3)}
+.tag-o{background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3)}
+.tag-nef{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3)}
+.chip{display:inline-block;border-radius:3px;font-size:9px;font-weight:700;padding:2px 5px}
+.cF{background:rgba(46,204,113,.2);color:#2ECC71}.cZ{background:rgba(243,156,18,.2);color:#F39C12}
+.cS{background:rgba(75,184,212,.2);color:var(--cyan)}.cN{background:rgba(155,89,182,.2);color:var(--purple)}
+.cNT{background:rgba(46,204,113,.12);color:#27AE60;border:1px solid rgba(46,204,113,.25)}
+.cNN{background:rgba(155,89,182,.12);color:#8E44AD;border:1px solid rgba(155,89,182,.25)}
+.cU{background:rgba(231,76,60,.15);color:var(--red)}.cW{background:rgba(100,116,139,.15);color:var(--text3)}
+.ptabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ptab{flex-shrink:0;padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:var(--font)}
+.ptab.active{background:var(--cyan);border-color:var(--cyan);color:var(--navy2)}
+.vtog{display:flex;gap:4px;margin-bottom:12px}
+.vtog-btn{flex:1;padding:6px;border-radius:var(--r-sm);font-size:11px;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);text-align:center;transition:all .15s}
+.vtog-btn.active{background:var(--navy4);color:var(--white);border-color:var(--cyan)}
+.cal-wrap{overflow-x:auto;margin-bottom:12px}
+.cal-tbl{border-collapse:collapse;min-width:520px;width:100%}
+.cal-tbl th{font-size:9px;color:var(--text3);font-weight:600;padding:5px 2px;text-align:center;border-bottom:1px solid var(--border);font-family:var(--mono);text-transform:uppercase}
+.cal-tbl th.we{color:var(--amber)}
+.cal-tbl td{padding:2px;border-bottom:1px solid var(--border2);text-align:center;vertical-align:middle}
+.cal-tbl td.nc{text-align:left;padding-left:8px;font-size:11px;color:var(--text2);white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis;border-right:1px solid var(--border)}
+.cal-tbl tr:hover{background:rgba(255,255,255,.02)}.td-we{background:rgba(255,200,0,.03)}
+.my-row{background:rgba(75,184,212,.05)!important}.my-row td.nc{color:var(--cyan)!important;font-weight:600}
+.dot-e{color:var(--border);font-size:10px}
+.pdf-view{background:var(--navy2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.pdf-header{background:var(--navy4);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.pdf-title{font-size:14px;font-weight:700;letter-spacing:.5px;font-family:var(--mono)}
+.pdf-sub{font-size:10px;color:var(--text2);font-family:var(--mono)}
+.pdf-tbl{width:100%;border-collapse:collapse;font-size:11px;min-width:400px}
+.pdf-tbl th{background:var(--navy3);padding:6px 8px;text-align:center;font-size:10px;font-weight:700;color:var(--text3);font-family:var(--mono);border:1px solid var(--border2);text-transform:uppercase;letter-spacing:.3px}
+.pdf-tbl td{padding:4px 6px;border:1px solid var(--border2);text-align:center;vertical-align:middle}
+.pdf-tbl td.date-cell{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:left;padding-left:8px;white-space:nowrap}
+.pdf-tbl tr.we-row{background:rgba(255,200,0,.04)}
+.pdf-name{font-size:10px;color:var(--text2)}
+.my-schicht-card{background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+/* ALGORITHM */
+.algo-container{background:var(--navy2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.algo-header{background:var(--navy4);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.algo-title{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--cyan)}
+.algo-progress{height:3px;background:var(--navy4);position:relative;overflow:hidden}
+.algo-progress-fill{height:100%;background:var(--cyan);transition:width .5s ease;border-radius:0 2px 2px 0}
+.algo-step{padding:12px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:flex-start;gap:12px;transition:background .2s}
+.algo-step:last-child{border-bottom:none}
+.algo-step.done{background:rgba(46,204,113,.04)}.algo-step.active{background:rgba(75,184,212,.06)}.algo-step.pending{opacity:.45}
+.step-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;font-family:var(--mono)}
+.si-done{background:rgba(46,204,113,.2);color:var(--green)}.si-active{background:rgba(75,184,212,.2);color:var(--cyan);animation:blink 1.4s infinite}
+.si-pending{background:var(--navy4);color:var(--text3)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.step-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.step-detail{font-size:11px;color:var(--text3);line-height:1.5}
+.step-result{margin-top:6px;display:flex;gap:5px;flex-wrap:wrap}
+.step-chip{font-size:10px;border-radius:3px;padding:2px 7px;font-weight:500}
+.sc-ok{background:rgba(46,204,113,.15);color:var(--green)}.sc-warn{background:rgba(243,156,18,.15);color:var(--amber)}.sc-err{background:rgba(231,76,60,.15);color:var(--red)}.sc-info{background:rgba(75,184,212,.15);color:var(--cyan)}
+/* EXPORT */
+.export-option{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .15s}
+.export-option:last-child{border-bottom:none}
+.export-option:hover{background:rgba(255,255,255,.02)}
+.exp-icon{width:42px;height:42px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.exp-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.exp-sub{font-size:11px;color:var(--text3)}
+.exp-btn{margin-left:auto;flex-shrink:0}
+/* MITARBEITER */
+.ma-card{background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}
+.ma-card:hover{border-color:var(--cyan)}
+.ma-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.ma-info{flex:1}
+.ma-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.ma-meta{font-size:11px;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qual-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.lk-bar-mini{height:3px;background:var(--navy4);border-radius:2px;overflow:hidden;width:60px;display:inline-block;vertical-align:middle;margin-left:4px}
+.lk-fill-mini{height:100%;border-radius:2px}
+/* WISH CAL */
+.wcal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px}
+.wch{text-align:center;font-size:9px;color:var(--text3);padding:3px 0;font-family:var(--mono);font-weight:600}
+.wd{border:1px solid var(--border2);border-radius:4px;padding:3px 2px;min-height:50px;cursor:pointer;transition:border-color .1s}
+.wd:hover{border-color:var(--cyan)}.wd.we{background:rgba(255,255,255,.02)}.wd.empty{border-color:transparent;background:transparent;pointer-events:none}
+.wd-n{font-size:9px;color:var(--text3);text-align:center;margin-bottom:2px;font-family:var(--mono)}
+.wchip{display:block;border-radius:2px;font-size:7px;font-weight:700;padding:1px 2px;margin-bottom:1px;text-align:center;overflow:hidden;white-space:nowrap}
+.wcfh{background:rgba(231,76,60,.3);color:#F87171}.wcfm{background:rgba(243,156,18,.25);color:#FCD34D}
+.wcfn{background:rgba(100,116,139,.2);color:var(--text2)}.wca{background:rgba(46,204,113,.2);color:#4ADE80}
+.wcs{background:rgba(75,184,212,.2);color:var(--cyan)}.wcx{background:rgba(155,89,182,.2);color:var(--purple)}.wcfb{background:rgba(231,76,60,.15);color:#F472B6}
+/* TAUSCH */
+.tausch-card{padding:12px 0;border-bottom:1px solid var(--border2)}.tausch-card:last-child{border-bottom:none}
+.tausch-status{font-size:10px;font-weight:700;border-radius:3px;padding:2px 7px}
+.ts-offen{background:rgba(243,156,18,.15);color:var(--amber);border:1px solid rgba(243,156,18,.3)}
+.ts-warten{background:rgba(75,184,212,.15);color:var(--cyan);border:1px solid rgba(75,184,212,.3)}
+.radio-opt{flex:1;min-width:120px;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;cursor:pointer;transition:all .15s;font-size:12px}
+.radio-opt.sel{border-color:var(--cyan);background:rgba(75,184,212,.1);color:var(--cyan)}
+/* LK */
+.lkr{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2)}.lkr:last-child{border-bottom:none}
+.lrank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.lr1{background:rgba(231,76,60,.2);color:var(--red)}.lr2{background:rgba(243,156,18,.2);color:var(--amber)}.lr3{background:rgba(46,204,113,.2);color:var(--green)}.lrn{background:var(--navy4);color:var(--text3)}
+.lkbar{height:4px;background:var(--navy4);border-radius:2px;overflow:hidden;margin-top:4px}
+.lkfill{height:100%;border-radius:2px}
+/* AUSFALL */
+.ab{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.ap{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.vr{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border2)}.vr:last-child{border-bottom:none}
+.vrk{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.vr1{background:rgba(46,204,113,.2);color:var(--green)}.vr2{background:rgba(75,184,212,.2);color:var(--cyan)}.vr3{background:rgba(243,156,18,.2);color:var(--amber)}
+.vc{font-size:8px;border-radius:2px;padding:1px 5px;font-weight:700}
+.vco{background:rgba(46,204,113,.15);color:var(--green)}.vcw{background:rgba(243,156,18,.15);color:var(--amber)}.vce{background:rgba(231,76,60,.15);color:var(--red)}
+/* FORM */
+.ff{margin-bottom:12px}
+.ff label{display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.ff input,.ff select,.ff textarea{width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none}
+.ff input:focus,.ff select:focus{border-color:var(--cyan)}
+/* SETTINGS */
+.sr{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border2)}.sr:last-child{border-bottom:none}
+.srl{font-size:13px;font-weight:500}.srs{font-size:11px;color:var(--text3);margin-top:1px}
+.tog{width:38px;height:20px;border-radius:10px;background:var(--navy4);border:1px solid var(--border);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--cyan);border-color:var(--cyan)}.tog::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s}.tog.on::after{left:21px}
+/* BUTTONS */
+.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);transition:all .15s}
+.btn-p{background:var(--cyan);color:var(--navy2)}.btn-p:hover{background:var(--cyan2)}
+.btn-s{background:var(--navy3);color:var(--text2);border:1px solid var(--border)}
+.btn-d{background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.25)}
+.btn-g{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.25)}
+.btn-sm{padding:5px 10px;font-size:11px}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.login-screen{position:fixed;inset:0;background:var(--navy2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:1000}
+.login-screen.hidden{display:none}
+.tenant-chip{flex:1;padding:6px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;text-align:center;font-family:var(--font);transition:all .15s}
+.tenant-chip.active{background:rgba(75,184,212,.1);border-color:var(--cyan);color:var(--cyan);font-weight:600}
+.trole-superadmin{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3)}
+.bew-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--navy4);outline:none;cursor:pointer}
+.bew-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid var(--navy2)}
+.bew-slider:disabled{opacity:.5;cursor:not-allowed}
+.tenant-card{background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}
+.tenant-card:hover{border-color:var(--cyan)}
+
+/* DRAG & DROP RANKING */
+.rank-list{list-style:none;padding:0;margin:0}
+.rank-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px;cursor:grab;user-select:none;transition:all .15s}
+.rank-item:active{cursor:grabbing;opacity:.85;transform:scale(1.02);z-index:10;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.rank-item.dragging{opacity:.4;border-style:dashed}
+.rank-item.drag-over{border-color:var(--cyan);background:rgba(75,184,212,.08)}
+.rank-handle{color:var(--text3);font-size:16px;cursor:grab;flex-shrink:0}
+.rank-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;font-family:var(--mono)}
+.rn-1{background:rgba(46,204,113,.2);color:var(--green)}
+.rn-2{background:rgba(75,184,212,.2);color:var(--cyan)}
+.rn-3{background:rgba(243,156,18,.2);color:var(--amber)}
+.rn-bot{background:rgba(231,76,60,.2);color:var(--red)}
+.rn-mid{background:var(--navy4);color:var(--text2)}
+.rank-label{flex:1;font-size:13px;font-weight:500}
+.rank-sub{font-size:10px;color:var(--text3)}
+.rank-coeff{font-family:var(--mono);font-size:11px;color:var(--text3);flex-shrink:0}
+.team-rank-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;width:50px;flex-shrink:0}
+.team-rank-fill{height:100%;border-radius:2px;background:var(--amber)}
+.reg-pending-card{background:rgba(75,184,212,.06);border:1px solid rgba(75,184,212,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.qual-check-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;transition:all .15s;margin-bottom:6px}
+.qual-check-item.selected{border-color:var(--cyan);background:rgba(75,184,212,.08)}
+.qual-check-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.qual-check-item.selected .qual-check-box{background:var(--cyan);border-color:var(--cyan);color:var(--navy2);font-size:11px;font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div style="width:56px;height:56px;border-radius:14px;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--navy2);margin-bottom:14px">NA</div>
+  <div style="font-size:22px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px">NA Dienstplan</div>
+  <div style="font-size:12px;color:var(--text3);margin-bottom:28px;font-family:var(--mono)" id="login-tenant-label">Klinik wird erkannt...</div>
+
+  <!-- Step 1: Login -->
+  <div id="login-step1" style="background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:20px;width:100%;max-width:340px">
+    <div id="login-error" style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:var(--r-sm);padding:8px 12px;font-size:12px;color:var(--red);margin-bottom:12px;display:none"></div>
+    <div style="margin-bottom:12px">
+      <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Arbeits-E-Mail</label>
+      <input type="email" id="login-email" placeholder="vorname.name@uksh.de" value="mueller.anna@uksh.de"
+        oninput="detectTenant(this.value)"
+        style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;color:var(--white);font-family:var(--font);font-size:13px;outline:none"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Passwort</label>
+      <input type="password" id="login-pw" placeholder="••••••••" value="Temp1234!"
+        onkeydown="if(event.key==='Enter')doLogin()"
+        style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;color:var(--white);font-family:var(--font);font-size:13px;outline:none"/>
+    </div>
+    <button onclick="doLogin()" style="width:100%;padding:11px;border-radius:var(--r-sm);background:var(--cyan);color:var(--navy2);font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:var(--font)">Anmelden</button>
+    <div style="text-align:center;margin-top:12px">
+      <span style="font-size:11px;color:var(--text3)">Neu? </span>
+      <button onclick="showRegistration()" style="background:none;border:none;color:var(--cyan);font-size:11px;cursor:pointer;font-family:var(--font);font-weight:500">Zugang beantragen</button>
+    </div>
+    <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Passwort vergessen? IT-Administration kontaktieren.</div>
+  </div>
+
+  <!-- Step 2: Bereich / Rotation -->
+  <div id="login-step2" style="display:none;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:20px;width:100%;max-width:340px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:4px">Willkommen, <span id="step2-name">Dr. Müller</span>!</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">Bitte wähle deinen aktuellen Einsatzbereich.</div>
+    <div style="margin-bottom:12px">
+      <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Bereich / Rotation</label>
+      <select id="step2-bereich" style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;color:var(--white);font-family:var(--font);font-size:13px;outline:none" onchange="updateStep2()">
+        <option value="ina-na">INA — Notaufnahme</option>
+        <option value="ina-innere">INA — Innere Medizin</option>
+        <option value="ina-uch">INA — Unfallchirurgie</option>
+        <option value="ina-neuro">INA — Neurologie</option>
+        <option value="fa-innere">Facharzt — Innere Medizin</option>
+        <option value="fa-oa">Oberarzt</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Einsatz von</label>
+        <input type="date" id="step2-von" style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:12px;outline:none"/>
+      </div>
+      <div>
+        <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Einsatz bis</label>
+        <input type="date" id="step2-bis" style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:12px;outline:none"/>
+      </div>
+    </div>
+    <button onclick="completeStep2()" style="width:100%;padding:11px;border-radius:var(--r-sm);background:var(--cyan);color:var(--navy2);font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:var(--font)">Weiter →</button>
+  </div>
+
+  <!-- Registration -->
+  <div id="login-reg" style="display:none;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r);padding:20px;width:100%;max-width:340px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:4px">Zugang beantragen</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.5">Nach dem Absenden erhält der Dienstplaner eine Benachrichtigung und gibt deinen Zugang frei.</div>
+    <div style="margin-bottom:10px">
+      <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Arbeits-E-Mail</label>
+      <input type="email" id="reg-email" placeholder="vorname.name@uksh.de" style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;color:var(--white);font-family:var(--font);font-size:13px;outline:none" oninput="detectTenantReg(this.value)"/>
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Name</label>
+      <input id="reg-name" placeholder="Nachname, Vorname" style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;color:var(--white);font-family:var(--font);font-size:13px;outline:none"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Gewünschter Bereich</label>
+      <select style="width:100%;background:var(--navy4);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;color:var(--white);font-family:var(--font);font-size:13px;outline:none">
+        <option>INA — Notaufnahme</option><option>INA — Innere Medizin</option><option>INA — UCH</option><option>INA — Neurologie</option><option>Facharzt</option><option>Oberarzt</option>
+      </select>
+    </div>
+    <div id="reg-tenant-info" style="font-size:11px;color:var(--text3);padding:8px 10px;background:var(--navy4);border-radius:var(--r-sm);margin-bottom:12px">
+      🏥 Klinik wird aus E-Mail-Domain erkannt
+    </div>
+    <button onclick="submitRegistration()" style="width:100%;padding:11px;border-radius:var(--r-sm);background:var(--cyan);color:var(--navy2);font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:var(--font);margin-bottom:8px">Antrag senden</button>
+    <button onclick="showLogin()" style="width:100%;padding:8px;border-radius:var(--r-sm);background:transparent;color:var(--text2);font-size:12px;border:1px solid var(--border);cursor:pointer;font-family:var(--font)">← Zurück zum Login</button>
+  </div>
+
+  <div style="margin-top:16px;font-size:10px;color:var(--text3);text-align:center;font-family:var(--mono);line-height:1.6">
+    Demo: mueller.anna@uksh.de / Temp1234! (Assistenz, First-Login)<br>
+    richter.g@uksh.de / Plan2025! (Dienstplaner)<br>
+    hoffmann.prof@uksh.de / Admin123! (Super-Admin)
+  </div>
+</div>
+
+<!-- FIRST LOGIN -->
+
+<div id="first-login-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:900;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--navy2);border:1px solid var(--amber);border-radius:var(--r);padding:20px;width:100%;max-width:360px">
+    <div style="font-size:15px;font-weight:700;color:var(--amber);margin-bottom:6px">🔐 Passwort ändern erforderlich</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5">Erstes Login mit temporärem Passwort. Bitte vergeben Sie jetzt ein persönliches Passwort (min. 8 Zeichen, 1 Großbuchstabe, 1 Zahl).</div>
+    <div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Neues Passwort</label><input type="password" id="new-pw1" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none"/></div>
+    <div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Bestätigen</label><input type="password" id="new-pw2" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none"/></div>
+    <div id="pw-error" style="font-size:11px;color:var(--red);margin-bottom:8px;display:none"></div>
+    <button onclick="changePassword()" style="width:100%;padding:9px;border-radius:var(--r-sm);background:var(--cyan);color:var(--navy2);font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:var(--font)">Passwort festlegen & einloggen</button>
+  </div>
+</div>
+
+<!-- ROLE SWITCHER -->
+<div class="role-sw" id="role-sw">
+  <div class="role-sw-title">Demo: Rolle wechseln</div>
+  <div class="role-opt active" onclick="setRole('assi',this)">👤 Assistenzarzt</div>
+  <div class="role-opt" onclick="setRole('oa',this)">👨‍⚕️ Oberarzt (Admin)</div>
+  <div class="role-opt" onclick="setRole('planer',this)">⚙️ Dienstplaner</div>
+  <div class="role-sw-section" style="font-size:9px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;margin:6px 0 4px;padding-top:6px;border-top:1px solid var(--border2)">System</div>
+  <div class="role-opt" onclick="setRole('superadmin',this)">🔴 Super-Admin</div>
+  <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border2)"><div class="role-opt" onclick="doLogout()" style="color:var(--red)">← Abmelden</div></div>
+  <div class="role-opt" onclick="setRole('planer',this)">⚙️ Dienstplaner</div>
+</div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="tlogo">
+    <div class="tlogobox">NA</div>
+    <div><div class="ttitle">NA Dienstplan</div><div class="tsub">UKSH · Notaufnahme</div></div>
+  </div>
+  <div class="tspacer"></div>
+  <span class="trole trole-assi" id="role-badge">ASSISTENZ</span>
+  <div class="tmonth">📅 Mai 2026</div>
+  <div class="tavatar" onclick="document.getElementById('role-sw').classList.toggle('open')">DR</div>
+</header>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="sg" id="dash-stats"></div>
+  <div class="sh"><div class="st" id="dash-title">Meine nächsten Schichten</div><button class="sl" onclick="showPage('dienstplan')">Alle →</button></div>
+  <div class="card" style="padding:0 14px" id="dash-content"></div>
+  <div class="sh" style="margin-top:8px"><div class="st">Aktiver Ausfall</div><button class="sl" onclick="showPage('ausfall')">Verwalten →</button></div>
+  <div class="ab"><div class="ap"></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Dr. Müller, A.</div><div style="font-size:11px;color:var(--text3)">Frühdienst · Innere · Krank bis Fr. 08.05.</div></div><button class="btn btn-d btn-sm" onclick="showPage('ausfall')">→</button></div>
+  <div class="sh" style="margin-top:2px"><div class="st">Wünsche Deadline</div></div>
+  <div class="card" style="display:flex;align-items:center;gap:12px">
+    <div style="font-size:24px">📋</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">Wünsche für Juni 2026</div><div style="font-size:11px;color:var(--amber);margin-top:2px">Abgabe bis 15. Mai — noch 11 Tage</div><div style="font-size:11px;color:var(--text3);margin-top:1px" id="dash-wunsch-sub">Noch nicht eingereicht</div></div>
+    <button class="btn btn-p btn-sm" onclick="showPage('wunsch')">Eingeben</button>
+  </div>
+
+  <div id="bew-reminder" style="display:none">
+    <div class="sh" style="margin-top:8px"><div class="st">Schichtbewertung fällig</div></div>
+    <div class="card" style="display:flex;align-items:center;gap:12px;border-color:var(--amber)">
+      <div style="font-size:24px">⭐</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600">Monatsbewertung — Mai 2026</div><div style="font-size:11px;color:var(--amber);margin-top:2px">Bitte bewerte die Belastung deiner Schichten</div></div>
+      <button class="btn btn-sm" style="background:rgba(243,156,18,.15);color:var(--amber);border:1px solid rgba(243,156,18,.3);flex-shrink:0" onclick="showPage('bewertung')">Jetzt bewerten</button>
+    </div>
+  </div>
+  <div id="dash-tausch-sec" style="display:none">
+    <div class="sh" style="margin-top:8px"><div class="st">Offene Tauschanfragen</div><button class="sl" onclick="showPage('tausch')">Alle →</button></div>
+    <div class="card" style="padding:0 14px" id="dash-tausch"></div>
+  </div>
+</div>
+
+<!-- DIENSTPLAN -->
+<div class="page" id="page-dienstplan">
+  <div class="ptabs" id="plan-tabs">
+    <button class="ptab active" onclick="setPlan(this,'innere')">Innere</button>
+    <button class="ptab" onclick="setPlan(this,'neuro')">Neurologie</button>
+    <button class="ptab" onclick="setPlan(this,'uch')">UCH</button>
+    <button class="ptab" onclick="setPlan(this,'oa')">Oberarzt</button>
+    <button class="ptab" onclick="setPlan(this,'nef')">NEF/C42/TNA</button>
+  </div>
+  <div class="vtog" id="view-toggle" style="display:none">
+    <button class="vtog-btn active" onclick="setView(this,'tabelle')">▦ Tabelle</button>
+    <button class="vtog-btn" onclick="setView(this,'pdf')">≡ PDF-Ansicht</button>
+  </div>
+  <div class="ml" id="plan-label">MAI 2026 · INNERE MEDIZIN</div>
+  <div id="view-tabelle"><div class="cal-wrap"><table class="cal-tbl" id="cal-tbl"></table></div></div>
+  <div id="view-pdf" style="display:none"><div style="overflow-x:auto"><div class="pdf-view"><div class="pdf-header"><div><div class="pdf-title" id="pdf-title">MAI 2026 · INNERE MEDIZIN</div><div class="pdf-sub">Notaufnahme UKSH · Stand: 05.05.2026</div></div><button class="btn btn-s btn-sm" onclick="showPage('export')">↓ Export</button></div><div style="overflow-x:auto"><table class="pdf-tbl" id="pdf-tbl"></table></div></div></div></div>
+  <div id="view-single" style="display:none"><div class="ml">MEINE SCHICHTEN — MAI 2026</div><div id="single-list"></div></div>
+  <div class="btn-row" id="planer-btns" style="display:none">
+    <button class="btn btn-p" onclick="showPage('algorithmus')">⚙ Algorithmus starten</button>
+    <button class="btn btn-s" onclick="showPage('export')">↓ Exportieren</button>
+  </div>
+</div>
+
+<!-- ALGORITHMUS -->
+<div class="page" id="page-algorithmus">
+  <div class="ml">ALGORITHMUS GENERATOR · MAI 2026</div>
+  <div class="card" id="algo-config">
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px">Einstellungen</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div class="ff" style="margin:0"><label>Monat</label><select><option>Mai 2026</option><option>Juni 2026</option><option>Juli 2026</option></select></div>
+      <div class="ff" style="margin:0"><label>Fachbereich</label><select id="algo-plan"><option value="innere">Innere Medizin</option><option value="neuro">Neurologie</option><option value="uch">UCH</option><option value="oa">Oberarzt</option><option value="alle">Alle gleichzeitig</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="background:var(--navy4);border-radius:var(--r-sm);padding:10px 12px"><div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-family:var(--mono);text-transform:uppercase">Fairheits-Schwellwert</div><div style="font-size:20px;font-weight:300;font-family:var(--mono);color:var(--cyan)">20%</div><div style="font-size:10px;color:var(--text3)">Ausgleich bei Abweichung</div></div>
+      <div style="background:var(--navy4);border-radius:var(--r-sm);padding:10px 12px"><div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-family:var(--mono);text-transform:uppercase">Wunschprioritäten</div><div style="font-size:12px;color:var(--white);margin-top:2px">Hoch → Mittel → Niedrig</div><div style="font-size:10px;color:var(--text3)">Lebenskonto als Tiebreaker</div></div>
+    </div>
+    <button class="btn btn-p" style="width:100%" onclick="startAlgo()">⚙ Algorithmus starten</button>
+  </div>
+  <div class="algo-container" id="algo-container" style="display:none">
+    <div class="algo-header"><div class="algo-title" id="algo-header-title">Algorithmus läuft...</div><div style="font-family:var(--mono);font-size:11px;color:var(--text2)" id="algo-timer">0.0s</div></div>
+    <div class="algo-progress"><div class="algo-progress-fill" id="algo-progress" style="width:0%"></div></div>
+    <div id="algo-steps"></div>
+  </div>
+  <div id="algo-results" style="display:none">
+    <div class="sh"><div class="st">Ergebnis — Mai 2026</div></div>
+    <div class="sg">
+      <div class="sb cc"><div class="sv" style="color:var(--cyan);font-size:20px" id="res-besetzt">—</div><div class="sl2">Schichten besetzt</div></div>
+      <div class="sb cg"><div class="sv" style="color:var(--green);font-size:20px" id="res-wunsch">—</div><div class="sl2">Wünsche erfüllt</div></div>
+      <div class="sb ca"><div class="sv" style="color:var(--amber);font-size:20px" id="res-konflikte">—</div><div class="sl2">Konflikte gelöst</div></div>
+      <div class="sb cr"><div class="sv" style="color:var(--red);font-size:20px" id="res-offen">—</div><div class="sl2">Offen / Warnung</div></div>
+    </div>
+    <div id="conflict-section" style="display:none">
+      <div class="ml" style="color:var(--amber)">MANUELLE KORREKTUREN EMPFOHLEN</div>
+      <div class="card" style="padding:0 14px"><div id="conflict-list"></div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-p" onclick="acceptPlan()">✓ Plan übernehmen & veröffentlichen</button>
+      <button class="btn btn-s" onclick="showPage('dienstplan')">▦ Im Kalender ansehen</button>
+      <button class="btn btn-s" onclick="startAlgo()">↻ Neu generieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div class="page" id="page-export">
+  <div class="ml">EXPORT · MAI 2026</div>
+  <div class="ff">
+    <label>Fachbereich</label>
+    <select style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none">
+      <option>Alle Fachbereiche</option><option>Innere Medizin</option><option>Neurologie</option><option>UCH</option><option>Oberarzt</option>
+    </select>
+  </div>
+  <div class="card" style="padding:0 14px">
+    <div class="export-option" onclick="doExport('pdf-gesamt')">
+      <div class="exp-icon" style="background:rgba(231,76,60,.15)">📄</div>
+      <div><div class="exp-title">PDF Gesamtplan</div><div class="exp-sub">Alle MA eines Fachbereichs · Querformat · 1 Seite/Fachbereich</div></div>
+      <button class="btn btn-s btn-sm exp-btn">↓ PDF</button>
+    </div>
+    <div class="export-option" onclick="doExport('pdf-einzel')">
+      <div class="exp-icon" style="background:rgba(75,184,212,.15)">📋</div>
+      <div><div class="exp-title">PDF Einzelplan</div><div class="exp-sub">Pro Mitarbeiter · nur eigene Schichten · Fachbereich + Zeiten</div></div>
+      <button class="btn btn-s btn-sm exp-btn">↓ PDF</button>
+    </div>
+    <div class="export-option" onclick="doExport('excel')">
+      <div class="exp-icon" style="background:rgba(46,204,113,.15)">📊</div>
+      <div><div class="exp-title">Excel / CSV</div><div class="exp-sub">Alle Schichten · maschinenlesbar · für Weiterverarbeitung</div></div>
+      <button class="btn btn-s btn-sm exp-btn">↓ XLSX</button>
+    </div>
+    <div class="export-option" onclick="doExport('ical')">
+      <div class="exp-icon" style="background:rgba(155,89,182,.15)">📅</div>
+      <div><div class="exp-title">iCal (.ics)</div><div class="exp-sub">Kalendereinträge pro MA · Apple Kalender / Google Calendar</div></div>
+      <button class="btn btn-s btn-sm exp-btn">↓ iCal</button>
+    </div>
+  </div>
+  <div class="ml" style="margin-top:4px">EINZELEXPORT PRO MITARBEITER</div>
+  <div class="card" style="padding:0 14px" id="ma-export-list"></div>
+</div>
+
+<!-- MITARBEITERVERWALTUNG -->
+<div class="page" id="page-ma">
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <input placeholder="Suche..." style="flex:1;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none" oninput="filterMA(this.value)"/>
+    <button class="btn btn-p btn-sm" onclick="openMAModal()">+ Neu</button>
+  </div>
+  <div class="ptabs" id="ma-tabs">
+    <button class="ptab active" onclick="setMATab(this,'alle')">Alle</button>
+    <button class="ptab" onclick="setMATab(this,'innere')">Innere</button>
+    <button class="ptab" onclick="setMATab(this,'neuro')">Neuro</button>
+    <button class="ptab" onclick="setMATab(this,'uch')">UCH</button>
+    <button class="ptab" onclick="setMATab(this,'oa')">OA</button>
+  </div>
+  <div id="ma-list"></div>
+</div>
+
+<!-- WÜNSCHE -->
+<div class="page" id="page-wunsch">
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+    <select id="wunsch-ma-sel" style="flex:1;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none"><option>Dr. Müller, A. — Innere</option></select>
+    <div style="font-size:10px;color:var(--amber);background:rgba(243,156,18,.1);border:1px solid rgba(243,156,18,.3);border-radius:var(--r-sm);padding:5px 8px;white-space:nowrap;font-family:var(--mono)">15. MAI</div>
+  </div>
+  <div class="ml">JUNI 2026 · WÜNSCHE EINTRAGEN</div>
+  <div class="wcal" id="wcal"></div>
+  <div class="card" style="padding:10px 14px">
+    <div class="ml" style="margin-bottom:6px">Legende</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px;color:var(--text2)">
+      <div style="display:flex;align-items:center;gap:5px"><span class="wchip wcfh" style="width:34px">F!!!</span>Frei Hoch</div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="wchip wca" style="width:34px">Arb</span>Arbeitswunsch</div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="wchip wcs" style="width:34px">Sch</span>Schichtwunsch</div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="wchip wcx" style="width:34px">Kein</span>Ausschluss</div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="wchip wcfb" style="width:34px">Fortb</span>Fortbildung</div>
+    </div>
+  </div>
+  <div class="btn-row"><button class="btn btn-p">Wünsche speichern</button><button class="btn btn-s">Zurücksetzen</button></div>
+</div>
+
+<!-- TAUSCH -->
+<div class="page" id="page-tausch">
+  <button class="btn btn-p" style="width:100%;margin-bottom:14px" onclick="openTauschModal()">+ Neue Tauschanfrage</button>
+  <div class="ml">MEINE ANFRAGEN</div>
+  <div class="card" style="padding:0 14px">
+    <div class="tausch-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="tausch-status ts-offen">OFFEN</span><span style="font-size:11px;color:var(--text3)">Ausschreibung · 12.05.</span></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;flex-wrap:wrap"><span class="chip cS">Spätdienst</span><span>Di 12. Mai</span><span style="color:var(--text3)">→</span><span style="color:var(--text2)">Wer möchte übernehmen?</span></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">2 Interessenten · wartet auf Freigabe</div>
+      <div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-s btn-sm">Details</button><button class="btn btn-d btn-sm">Zurückziehen</button></div>
+    </div>
+    <div class="tausch-card" style="border-bottom:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="tausch-status ts-warten">WARTET</span><span style="font-size:11px;color:var(--text3)">Direkt an Dr. Weber</span></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;flex-wrap:wrap"><span class="chip cN">Nachtdienst</span><span>Fr 08. Mai</span><span style="color:var(--text3)">⇄</span><span class="chip cF">Frühdienst</span><span>Mo 11. Mai</span></div>
+    </div>
+  </div>
+  <div class="ml" style="margin-top:12px">EINGEHENDE ANFRAGEN</div>
+  <div class="card" style="padding:0 14px">
+    <div class="tausch-card" style="border-bottom:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="tausch-status ts-warten">ANFRAGE</span><span style="font-size:11px;color:var(--text3)">Von Dr. Klein, D.</span></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;flex-wrap:wrap"><span class="chip cF">Frühdienst</span><span>Mo 18. Mai</span><span style="color:var(--text3)">⇄</span><span class="chip cZ">Zwischen</span><span>Di 19. Mai</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-g btn-sm" onclick="alert('Angenommen — wartet auf Planer-Freigabe')">✓ Annehmen</button>
+        <button class="btn btn-d btn-sm">✗ Ablehnen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registrierungs-Anfragen (nur Planer) -->
+  <div id="reg-pending-section" style="display:none">
+    <div class="ml" style="margin-top:12px;color:var(--cyan)">NEUE ZUGÄNGE — FREIGABE</div>
+    <div id="reg-pending-list"></div>
+  </div>
+
+  <div id="planer-queue" style="display:none">
+    <div class="ml" style="margin-top:12px;color:var(--amber)">FREIGABE-QUEUE — DIENSTPLANER</div>
+    <div class="card" style="padding:0 14px" id="planer-queue-list"></div>
+  </div>
+</div>
+
+<!-- LEBENSKONTO -->
+<div class="page" id="page-leben">
+  <div class="ptabs" id="lk-tabs">
+    <button class="ptab active" onclick="setLKTab(this)">3 Mon.</button>
+    <button class="ptab" onclick="setLKTab(this)">6 Mon.</button>
+    <button class="ptab" onclick="setLKTab(this)">9 Mon.</button>
+    <button class="ptab" onclick="setLKTab(this)">12 Mon.</button>
+    <button class="ptab" onclick="setLKTab(this)">YTD</button>
+    <button class="ptab" onclick="setLKTab(this)">Gesamt</button>
+  </div>
+  <div class="sg">
+    <div class="sb cc"><div class="sv" style="color:var(--cyan);font-size:22px" id="lk-mine">18.4</div><div class="sl2">Meine Belastung</div></div>
+    <div class="sb cg"><div class="sv" style="color:var(--green);font-size:22px">87<span class="su">%</span></div><div class="sl2">Wunscherfüllung</div></div>
+  </div>
+  <div class="ml" id="lk-title">MEIN KONTO · 3 MONATE</div>
+  <div class="card" style="padding:0 14px"><div id="lk-list"></div></div>
+</div>
+
+<!-- AUSFALL -->
+<div class="page" id="page-ausfall">
+  <div class="ab"><div class="ap"></div><div><div style="font-size:13px;font-weight:600">Aktiver Ausfall</div><div style="font-size:11px;color:var(--text3)">Dr. Müller, A. · Frühdienst · Innere · Krank bis Fr 08.05.</div></div></div>
+  <div class="ml">ERSATZVORSCHLÄGE · SOFORT GENERIERT</div>
+  <div class="card" style="padding:0 14px"><div id="vlist"></div></div>
+  <div class="btn-row">
+    <button class="btn btn-p" onclick="alert('Alle 3 gleichzeitig benachrichtigt')">Alle gleichzeitig anfragen</button>
+    <button class="btn btn-d" onclick="alert('Neuen Ausfall melden')">+ Neuer Ausfall</button>
+  </div>
+</div>
+
+<!-- EINSTELLUNGEN -->
+<div class="page" id="page-settings">
+  <div class="ml">Mein Profil</div>
+  <div class="card" style="padding:0 14px">
+    <div class="sr"><div><div class="srl" id="set-name">Dr. Müller, A.</div><div class="srs" id="set-role-txt">Assistenzarzt · Innere Medizin</div></div><button class="btn btn-s btn-sm">Bearbeiten</button></div>
+    <div class="sr"><div class="srl">E-Mail</div><span style="font-family:var(--mono);font-size:11px;color:var(--text2)" id="set-email">mueller.anna@uksh.de</span></div>
+    <div class="sr"><div class="srl">Eintritt Notaufnahme</div><span style="font-family:var(--mono);font-size:12px;color:var(--text2)">Feb 2024</span></div>
+    <div class="sr"><div class="srl">Passwort ändern</div><button class="btn btn-s btn-sm" onclick="alert('Passwort-Änderung...')">Ändern</button></div>
+  </div>
+  <div class="ml">Benachrichtigungen</div>
+  <div class="card" style="padding:0 14px">
+    <div class="sr"><div><div class="srl">Ausfall-Anfragen</div><div class="srs">Push bei Einsprung-Anfrage</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="sr"><div><div class="srl">Tauschanfragen</div><div class="srs">Push bei neuer Anfrage</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="sr"><div><div class="srl">Dienstplan veröffentlicht</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="sr"><div><div class="srl">Wünsche-Deadline</div><div class="srs">Erinnerung 3 Tage vorher</div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+  </div>
+  <div class="ml" id="admin-section-title" style="display:none">Administration</div>
+  <div class="card" style="padding:0 14px;display:none" id="admin-card">
+    <div class="sr"><div class="srl">Mitarbeiterverwaltung</div><button class="btn btn-s btn-sm" onclick="showPage('ma')">→</button></div>
+    <div class="sr"><div class="srl">Besetzungsmatrix</div><button class="btn btn-s btn-sm">→</button></div>
+    <div class="sr"><div class="srl">NEF Monatsplanung</div><button class="btn btn-s btn-sm">→</button></div>
+    <div class="sr"><div class="srl">Schichtzeiten & ArbZG</div><button class="btn btn-s btn-sm">→</button></div>
+    <div class="sr"><div class="srl">Planungsregeln</div><button class="btn btn-s btn-sm">→</button></div>
+    <div class="sr"><div class="srl">Export & Veröffentlichung</div><button class="btn btn-s btn-sm" onclick="showPage('export')">→</button></div>
+    <div class="sr"><div><div class="srl">Qualifikations-Freigabe</div><div class="srs">Einmalige Freigabe · 2 ausstehend</div></div><button class="btn btn-s btn-sm" onclick="showPage('qual-freigabe')">→</button></div>
+  </div>
+  <div class="ml" id="superadmin-sec" style="display:none">System-Administration</div>
+  <div class="card" style="padding:0 14px;display:none" id="superadmin-card">
+    <div class="sr"><div class="srl">Kliniken & Tenants</div><button class="btn btn-s btn-sm" onclick="showPage('superadmin')">→</button></div>
+    <div class="sr"><div class="srl">Schichtbewertung Auswertung</div><button class="btn btn-s btn-sm" onclick="showPage('bewertung')">→</button></div>
+    <div class="sr"><div class="srl">System-Logs & Audit Trail</div><button class="btn btn-s btn-sm" onclick="alert('Logs...')">→</button></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+    <button class="btn btn-d" onclick="doLogout()">← Abmelden</button>
+  </div>
+</div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="botnav">
+  <button class="bni active" id="nav-dashboard" onclick="showPage('dashboard')"><div class="bni-icon">⌂</div><div class="bni-lbl">Start</div></button>
+  <button class="bni" id="nav-dienstplan" onclick="showPage('dienstplan')"><div class="bni-icon">▦</div><div class="bni-lbl">Dienstplan</div></button>
+  <button class="bni" id="nav-wunsch" onclick="showPage('wunsch')"><div class="bni-icon">✎</div><div class="bni-lbl">Wünsche</div></button>
+  <button class="bni" id="nav-tausch" onclick="showPage('tausch')" style="position:relative"><div class="bni-icon">⇄</div><div class="bni-lbl">Tausch</div><span class="bni-badge" id="tausch-badge">1</span></button>
+  <button class="bni" id="nav-leben" onclick="showPage('leben')"><div class="bni-icon">◈</div><div class="bni-lbl">Konto</div></button>
+  <button class="bni" id="nav-ausfall" onclick="showPage('ausfall')" style="position:relative"><div class="bni-icon">⚠</div><div class="bni-lbl">Ausfall</div><span class="bni-badge">1</span></button>
+  <button class="bni" id="nav-settings" onclick="showPage('settings')"><div class="bni-icon">≡</div><div class="bni-lbl">Einst.</div></button>
+</nav>
+
+<!-- TAUSCH MODAL -->
+<div class="modal-overlay" id="tausch-modal">
+  <div class="modal">
+    <div class="modal-title">Neue Tauschanfrage <button class="modal-close" onclick="closeTauschModal()">✕</button></div>
+    <div class="ff">
+      <label>Art der Anfrage</label>
+      <div style="display:flex;gap:8px">
+        <div class="radio-opt sel" onclick="selectTauschArt(this,'direkt')">👤 Direkt an Kollegen</div>
+        <div class="radio-opt" onclick="selectTauschArt(this,'offen')">📢 Offen ausschreiben</div>
+      </div>
+    </div>
+    <div class="ff"><label>Meine Schicht (abgeben)</label>
+      <select id="sim-from-modal" onchange="resetTauschCheck()" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none">
+        <option value="N">Fr 08.05. — Nachtdienst (22:00–07:45)</option>
+        <option value="S">Di 12.05. — Spätdienst (14:00–22:30)</option>
+        <option value="F">Mo 18.05. — Frühdienst (07:00–15:45)</option>
+      </select>
+    </div>
+    <div id="tausch-kollege-field" class="ff"><label>Kollege anfragen</label>
+      <select style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none">
+        <option>Dr. Weber, C. — Innere</option><option>Dr. Klein, D. — Innere</option><option>Dr. Lange, F. — Innere</option>
+      </select>
+    </div>
+    <div id="tausch-gegen-field" class="ff"><label>Gegen diese Schicht</label>
+      <select id="sim-to-modal" onchange="resetTauschCheck()" style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none">
+        <option value="F">Mo 11.05. — Frühdienst (07:00–15:45)</option>
+        <option value="Z">Di 19.05. — Zwischendienst (11:00–20:00)</option>
+        <option value="N">Mi 20.05. — Nachtdienst (22:00–07:45)</option>
+        <option value="S">Do 21.05. — Spätdienst (14:00–22:30)</option>
+      </select>
+    </div>
+    <div class="ff"><label>Notiz (optional)</label>
+      <textarea placeholder="z.B. Familiärer Termin..." style="width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;color:var(--white);font-family:var(--font);font-size:13px;outline:none;height:60px;resize:none"></textarea>
+    </div>
+    <div id="tausch-check-result" style="display:none;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:12px"></div>
+    <div style="font-size:11px;color:var(--text3);padding:8px 10px;background:var(--navy4);border-radius:var(--r-sm);margin-bottom:12px">ℹ Tausch wird automatisch auf ArbZG, Schichtabfolge und Besetzungsregeln geprüft.</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-p" style="flex:1" id="tausch-send-btn" onclick="validateAndSend()">Prüfen & Senden</button>
+      <button class="btn btn-s" onclick="closeTauschModal()">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MA MODAL -->
+<div class="modal-overlay" id="ma-modal">
+  <div class="modal">
+    <div class="modal-title">Mitarbeiterprofil <button class="modal-close" onclick="document.getElementById('ma-modal').classList.remove('open')">✕</button></div>
+    <div class="ff"><label>Name</label><input placeholder="Nachname, Vorname" id="ma-name"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="ff"><label>Rolle</label>
+        <select id="ma-rolle" onchange="updateMAForm()">
+          <option value="assi">Assistenzarzt</option><option value="fa">Facharzt</option><option value="oa">Oberarzt</option>
+        </select>
+      </div>
+      <div class="ff"><label>Stellenanteil (VK)</label><input placeholder="z.B. 1.0" id="ma-vk"/></div>
+    </div>
+    <div class="ff"><label>Fachrichtung</label>
+      <select id="ma-fach" onchange="updateMAForm()">
+        <option value="uc">Unfallchirurgie</option><option value="neuro">Neurologie</option><option value="innere">Innere Medizin</option>
+      </select>
+    </div>
+    <div id="innere-sub-field" class="ff" style="display:none"><label>Subtyp Innere</label>
+      <select><option>Allgemeine Innere</option><option>Nephrologie</option><option>Onkologie</option><option>Kardiologie</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="ff"><label>Intensiverfahrung</label>
+        <select><option>Ja</option><option>Nein</option></select>
+      </div>
+      <div class="ff"><label>Startdatum NA</label><input type="date" id="ma-start"/></div>
+    </div>
+    <div class="ff"><label>INA-Arzt</label>
+      <select id="ma-ina" onchange="updateMAForm()"><option value="nein">Nein</option><option value="ja">Ja</option></select>
+    </div>
+    <div id="ina-stations" style="display:none;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">INA-Rotationsstatus</div>
+      <div style="display:flex;gap:6px">
+        <div onclick="cycleINA(this,'uc')" data-st="0" style="flex:1;border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 8px;text-align:center;cursor:pointer;font-size:12px;transition:all .15s">UCH</div>
+        <div onclick="cycleINA(this,'innere')" data-st="0" style="flex:1;border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 8px;text-align:center;cursor:pointer;font-size:12px;transition:all .15s">Innere</div>
+        <div onclick="cycleINA(this,'neuro')" data-st="0" style="flex:1;border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 8px;text-align:center;cursor:pointer;font-size:12px;transition:all .15s">Neuro</div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px">1× Klick = aktuell · 2× = absolviert · 3× = zurücksetzen</div>
+    </div>
+    <div id="oa-quals" style="display:none;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.3px">Zusatzqualifikationen</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div onclick="toggleQual(this)" style="border:1px solid var(--border2);border-radius:var(--r-sm);padding:5px 12px;cursor:pointer;font-size:12px;transition:all .15s">NEF</div>
+        <div onclick="toggleQual(this)" style="border:1px solid var(--border2);border-radius:var(--r-sm);padding:5px 12px;cursor:pointer;font-size:12px;transition:all .15s">TNA</div>
+        <div onclick="toggleQual(this)" style="border:1px solid var(--border2);border-radius:var(--r-sm);padding:5px 12px;cursor:pointer;font-size:12px;transition:all .15s">Christoph 42</div>
+      </div>
+    </div>
+    <div id="assi-nef" class="ff" style="display:none">
+      <label>Zusatzqualifikation</label>
+      <select><option>Keine</option><option>Notfallmedizin (NEF)</option></select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-p" style="flex:1" onclick="saveMA()">Speichern</button>
+      <button class="btn btn-s" onclick="document.getElementById('ma-modal').classList.remove('open')">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───
+const ROLES_DATA={assi:{label:'ASSISTENZ',cls:'trole-assi',name:'Dr. Müller, A.',roleTxt:'Assistenzarzt · Innere Medizin'},oa:{label:'ADMIN (OA)',cls:'trole-oa',name:'Prof. Hoffmann',roleTxt:'Oberarzt · Admin'},planer:{label:'DIENSTPLANER',cls:'trole-planer',name:'Dr. Richter, G.',roleTxt:'Oberarzt · Dienstplaner'}};
+const MAs_DATA={innere:['Dr. Müller, A.','Dr. Schmidt, B.','Dr. Weber, C.','Dr. Klein, D.','Dr. Bauer, E.','Dr. Lange, F.','Dr. Hoffmann, G.','Dr. Richter, H.'],neuro:['Dr. Fischer, J.','Dr. Meyer, K.','Dr. Braun, L.','Dr. Krause, M.'],uch:['Dr. Zimmermann','Dr. Hartmann, N.','Dr. Krüger, O.','Dr. Scholz, P.'],oa:['Prof. Hoffmann','Dr. Richter G.','Dr. Wolf, H.','Dr. Schäfer, I.'],nef:['NEF-Tag','NEF-Nacht','C42-Tag','C42-Nacht','TNA-Tag']};
+const CHIPS={F:'cF',Z:'cZ',S:'cS',N:'cN',NT:'cNT',NN:'cNN',U:'cU',W:'cW'};
+const SHIFT_TIMES={F:'07:00–15:45',Z:'11:00–20:00',S:'14:00–22:30',N:'22:00–07:45',NT:'07:00–19:30',NN:'19:00–07:30'};
+const SHIFT_NAMES={F:'Frühdienst',Z:'Zwischendienst',S:'Spätdienst',N:'Nachtdienst',NT:'NEF-Tag',NN:'NEF-Nacht',U:'Urlaub',W:'Frei'};
+const DAYS_DE=['So','Mo','Di','Mi','Do','Fr','Sa'];
+const MY_SHIFTS=[{d:5,s:'F'},{d:6,s:'Z'},{d:11,s:'S'},{d:12,s:'S'},{d:15,s:'N'},{d:19,s:'F'},{d:20,s:'F'},{d:26,s:'N'},{d:27,s:'N'}];
+const MA_PROFILES=[
+  {name:'Dr. Müller, A.',rolle:'Assistenzarzt',fach:'Innere',vk:'1.0',fk:18.4,quals:[],color:'#4BB8D4'},
+  {name:'Dr. Schmidt, B.',rolle:'Facharzt',fach:'Innere',vk:'1.0',fk:19.8,quals:['NEF'],color:'#2ECC71'},
+  {name:'Dr. Weber, C.',rolle:'Assistenzarzt',fach:'UCH',vk:'0.75',fk:14.8,quals:[],color:'#F39C12'},
+  {name:'Dr. Klein, D.',rolle:'Assistenzarzt',fach:'Innere',vk:'1.0',fk:19.1,quals:[],color:'#9B59B6'},
+  {name:'Dr. Bauer, E.',rolle:'Facharzt',fach:'Innere',vk:'1.0',fk:22.7,quals:['NEF'],color:'#E74C3C'},
+  {name:'Dr. Lange, F.',rolle:'Assistenzarzt',fach:'Innere',vk:'0.5',fk:21.2,quals:[],color:'#4BB8D4'},
+  {name:'Prof. Hoffmann',rolle:'Oberarzt',fach:'OA',vk:'1.0',fk:16.2,quals:['NEF','TNA','C42'],color:'#2ECC71'},
+  {name:'Dr. Richter G.',rolle:'Oberarzt',fach:'OA',vk:'1.0',fk:18.9,quals:['NEF','C42'],color:'#F39C12'},
+  {name:'Dr. Fischer, J.',rolle:'Assistenzarzt',fach:'Neuro',vk:'1.0',fk:17.3,quals:[],color:'#9B59B6'},
+  {name:'Dr. Meyer, K.',rolle:'Facharzt',fach:'Neuro',vk:'1.0',fk:20.1,quals:[],color:'#E74C3C'},
+];
+let maFilter='alle';
+let currentRole='assi',currentPlan='innere',currentView='tabelle',algoRunning=false,algoTimer=null;
+
+// ─── NAVIGATION ───
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id)?.classList.add('active');
+  document.getElementById('nav-'+id)?.classList.add('active');
+  document.getElementById('role-sw').classList.remove('open');
+}
+
+// ─── ROLE ───
+function setRole(role,el){
+  currentRole=role;
+  document.querySelectorAll('.role-opt').forEach(o=>o.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const r=ROLES_DATA[role];
+  document.getElementById('role-badge').textContent=r.label;
+  document.getElementById('role-badge').className='trole '+r.cls;
+  document.getElementById('set-name').textContent=r.name;
+  document.getElementById('set-role-txt').textContent=r.roleTxt;
+  const isAdmin=role==='oa'||role==='planer';
+  const isPlaner=role==='planer';
+  document.getElementById('view-toggle').style.display=isAdmin?'flex':'none';
+  document.getElementById('planer-btns').style.display=isPlaner?'flex':'none';
+  document.getElementById('admin-section-title').style.display=isAdmin?'block':'none';
+  document.getElementById('admin-card').style.display=isAdmin?'block':'none';
+  document.getElementById('planer-queue').style.display=isPlaner?'block':'none';
+  const regSec=document.getElementById('reg-pending-section');if(regSec)regSec.style.display=isPlaner?'block':'none';
+  const saCard=document.getElementById('superadmin-card');const saSec=document.getElementById('superadmin-sec');
+  if(saCard)saCard.style.display=isSA?'block':'none';if(saSec)saSec.style.display=isSA?'block':'none';
+  renderBewertung();renderQualFreigabe();renderRegPending();renderQualConfirm();
+  document.getElementById('tausch-badge').textContent=isPlaner?'3':'1';
+  if(isAdmin){
+    document.getElementById('view-tabelle').style.display=currentView==='tabelle'?'block':'none';
+    document.getElementById('view-pdf').style.display=currentView==='pdf'?'block':'none';
+    document.getElementById('view-single').style.display='none';
+    renderCal(currentPlan);
+  } else {
+    document.getElementById('view-tabelle').style.display='none';
+    document.getElementById('view-pdf').style.display='none';
+    document.getElementById('view-single').style.display='block';
+    renderSingleView();
+  }
+  document.getElementById('lk-title').textContent=isAdmin?'RANGLISTE TEAM · 3 MONATE':'MEIN KONTO · 3 MONATE';
+  const sel=document.getElementById('wunsch-ma-sel');
+  sel.innerHTML=isAdmin?MAs_DATA.innere.map(m=>`<option>${m}</option>`).join(''):`<option>${r.name} — Innere</option>`;
+  renderDash();renderLK();renderMAList();renderMAExportList();
+  document.getElementById('role-sw').classList.remove('open');
+}
+
+// ─── DASHBOARD ───
+function renderDash(){
+  
+  if(isAdmin){
+    document.getElementById('dash-stats').innerHTML=`<div class="sb cc"><div class="sv" style="color:var(--cyan)">28<span class="su">/30</span></div><div class="sl2">Schichten besetzt</div></div><div class="sb ca"><div class="sv" style="color:var(--amber)">2</div><div class="sl2">Offene Stellen</div></div><div class="sb cg"><div class="sv" style="color:var(--green)">87<span class="su">%</span></div><div class="sl2">Wünsche erfüllt</div></div><div class="sb cr"><div class="sv" style="color:var(--red)">1</div><div class="sl2">Aktive Ausfälle</div></div>`;
+    document.getElementById('dash-title').textContent='Heutige Besetzung — Mo 04. Mai';
+    document.getElementById('dash-content').innerHTML=`<div class="lr"><span class="tag tag-i">Innere</span><div style="flex:1;display:flex;gap:4px;flex-wrap:wrap"><span class="chip cF">F×3</span><span class="chip cZ">Z×1</span><span class="chip cS">S×3</span><span class="chip cN">N×2</span></div><span style="font-size:11px;color:var(--green)">✓</span></div><div class="lr"><span class="tag tag-n">Neuro</span><div style="flex:1;display:flex;gap:4px;flex-wrap:wrap"><span class="chip cF">F×1</span><span class="chip cZ">Z×1</span><span class="chip cS">S×2</span><span class="chip cN">N×1</span></div><span style="font-size:11px;color:var(--green)">✓</span></div><div class="lr"><span class="tag tag-u">UCH</span><div style="flex:1;display:flex;gap:4px;flex-wrap:wrap"><span class="chip cF">F×1</span><span class="chip cZ">Z×1</span><span class="chip cS">S×1</span><span class="chip cN">N×1</span></div><span style="font-size:11px;color:var(--green)">✓</span></div><div class="lr"><span class="tag tag-o">OA</span><div style="flex:1;display:flex;gap:4px;flex-wrap:wrap"><span class="chip cF">F×1</span><span class="chip cZ">Z×1</span><span class="chip cS" style="background:rgba(231,76,60,.15);color:var(--red)">S×0</span><span class="chip cN">N×1</span></div><span style="font-size:11px;color:var(--amber)">⚠</span></div><div class="lr"><span class="tag tag-nef">NEF</span><div style="flex:1;display:flex;gap:4px;flex-wrap:wrap"><span class="chip cNT">NEF-T</span><span class="chip cNN">NEF-N</span><span class="chip cF">C42-T</span></div><span style="font-size:11px;color:var(--green)">✓</span></div>`;
+    document.getElementById('dash-wunsch-sub').textContent='23 / 35 MA eingereicht';
+    document.getElementById('dash-tausch-sec').style.display='block';
+    document.getElementById('dash-tausch').innerHTML=`<div class="lr"><div style="flex:1"><div style="font-size:13px;font-weight:500">Dr. Müller ⇄ Dr. Weber</div><div style="font-size:11px;color:var(--text3)">Spät 12.05. ⇄ Früh 13.05. · wartet auf Freigabe</div></div><span class="tausch-status ts-warten" style="font-size:9px">WARTET</span></div>`;
+  } else {
+    document.getElementById('dash-stats').innerHTML=`<div class="sb cc"><div class="sv" style="color:var(--cyan)">9</div><div class="sl2">Meine Schichten</div></div><div class="sb cg"><div class="sv" style="color:var(--green)">18.4</div><div class="sl2">Belastungspunkte</div></div>`;
+    document.getElementById('dash-title').textContent='Meine nächsten Schichten';
+    const next=MY_SHIFTS.filter(s=>s.d>=4).slice(0,3);
+    document.getElementById('dash-content').innerHTML=next.map(s=>{const dow=DAYS_DE[new Date(2026,4,s.d).getDay()];return `<div class="lr"><div style="min-width:44px;text-align:center"><div style="font-size:10px;color:var(--text3)">${dow}</div><div style="font-size:20px;font-weight:300;font-family:var(--mono)">${s.d}</div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">${SHIFT_NAMES[s.s]}</div><div style="font-size:11px;color:var(--text3);font-family:var(--mono)">${SHIFT_TIMES[s.s]||''}</div></div><span class="chip ${CHIPS[s.s]}">${s.s}</span></div>`;}).join('');
+    document.getElementById('dash-wunsch-sub').textContent='Noch nicht eingereicht';
+    document.getElementById('dash-tausch-sec').style.display='block';
+    document.getElementById('dash-tausch').innerHTML=`<div class="lr"><div style="flex:1"><div style="font-size:13px;font-weight:500">Anfrage von Dr. Klein, D.</div><div style="font-size:11px;color:var(--text3)">Früh 18.05. ⇄ Zwischen 19.05.</div></div><button class="btn btn-g btn-sm" onclick="alert('Angenommen!')">Annehmen</button></div>`;
+  }
+}
+
+// ─── PLAN / VIEW ───
+function setPlan(btn,plan){
+  document.querySelectorAll('#plan-tabs .ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');currentPlan=plan;
+  const labels={innere:'INNERE MEDIZIN',neuro:'NEUROLOGIE',uch:'UNFALLCHIRURGIE',oa:'OBERARZT',nef:'NEF/C42/TNA'};
+  document.getElementById('plan-label').textContent=`MAI 2026 · ${labels[plan]||plan.toUpperCase()}`;
+  document.getElementById('pdf-title').textContent=`MAI 2026 · ${labels[plan]||plan.toUpperCase()}`;
+  if(currentRole==='assi'){renderSingleView();return;}
+  if(currentView==='tabelle') renderCal(plan); else renderPDF(plan);
+}
+function setView(btn,view){
+  document.querySelectorAll('.vtog-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentView=view;
+  document.getElementById('view-tabelle').style.display=view==='tabelle'?'block':'none';
+  document.getElementById('view-pdf').style.display=view==='pdf'?'block':'none';
+  if(view==='tabelle') renderCal(currentPlan); else renderPDF(currentPlan);
+}
+
+// ─── CALENDAR ───
+function rShift(d,i){const we=dow===0||dow===6;if(we){if(r<.3)return 'F';if(r<.45)return 'N';if(r<.55)return 'U';return 'W';}if(r<.3)return 'F';if(r<.45)return 'Z';if(r<.6)return 'S';if(r<.7)return 'N';if(r<.75)return 'U';return 'W';}
+function renderCal(plan='innere'){
+  const mas=MAs_DATA[plan];const t=document.getElementById('cal-tbl');
+  const myName=ROLES_DATA[currentRole].name.split(',')[0];
+  let h='<thead><tr><th style="text-align:left;padding-left:8px;min-width:85px">MA</th>';
+  for(let d=1;d<=31;d++){h+=`<th class="${we?'we':''}">${d}</th>`;}
+  h+='</tr></thead><tbody>';
+  mas.forEach((ma,i)=>{
+    const isMe=ma.includes(myName);
+    h+=`<tr class="${isMe?'my-row':''}"><td class="nc">${ma}</td>`;
+    for(let d=1;d<=31;d++){const dow=new Date(2026,4,d).getDay();const we=dow===0||dow===6;const s=isMe?(MY_SHIFTS.find(x=>x.d===d)?.s||'W'):rShift(d,i);const cls=CHIPS[s]||'';h+=`<td class="${we?'td-we':''}">${s&&s!=='W'?`<span class="chip ${cls}">${s}</span>`:'<span class="dot-e">·</span>'}</td>`;}
+    h+='</tr>';
+  });
+  t.innerHTML=h+'</tbody>';
+}
+function renderPDF(plan='innere'){
+  
+  
+  const schichten=plan==='nef'?['NT','NN']:['F','Z','S','N'];
+  
+  schichten.forEach(s=>h+=`<th>${s}</th>`);h+='</tr></thead><tbody>';
+  for(let d=1;d<=31;d++){const dow=new Date(2026,4,d).getDay();const we=dow===0||dow===6;h+=`<tr class="${we?'we-row':''}"><td class="date-cell">${d}. ${DAYS_DE[dow]}</td>`;schichten.forEach(s=>{const show=!(we&&s==='S');const name=show?mas[Math.floor(Math.random()*mas.length)].split(',')[0].replace('Dr. ','').replace('Prof. ',''):'';h+=`<td>${show?`<span class="pdf-name">${name}</span>`:''}</td>`;});h+='</tr>';}
+  t.innerHTML=h+'</tbody>';
+}
+function renderSingleView(){
+  document.getElementById('single-list').innerHTML=MY_SHIFTS.map(s=>{return `<div class="my-schicht-card"><div style="min-width:52px;text-align:center"><div style="font-size:11px;color:var(--text3)">${dow}</div><div style="font-size:22px;font-weight:300;font-family:var(--mono)">${s.d}</div><div style="font-size:9px;color:var(--text3)">Mai</div></div><div style="flex:1"><div style="font-size:13px;font-weight:600">${SHIFT_NAMES[s.s]}</div><div style="font-size:11px;color:var(--text3);font-family:var(--mono)">${SHIFT_TIMES[s.s]||''}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Innere Medizin</div></div><div style="display:flex;align-items:center;gap:6px"><span class="chip ${CHIPS[s.s]}" style="font-size:11px;padding:4px 8px">${s.s}</span><button class="btn btn-s btn-sm" onclick="openTauschModal()">⇄</button></div></div>`;}).join('');
+}
+
+// ─── ALGORITHM ───
+const ALGO_STEPS=[
+  {id:'A1',title:'A1 — Urlaub & Dienstreisen blockieren',detail:'Urlaube und Dienstreisen gesperrt. Wochenenden vor/nach Urlaub automatisch frei.',dur:700,res:[{c:'sc-ok',t:'12 Urlaubstage blockiert'},{c:'sc-ok',t:'3 Dienstreisen blockiert'},{c:'sc-ok',t:'4 Puffer-WE gesperrt'}]},
+  {id:'A2',title:'A2 — Mindestbesetzung berechnen',detail:'Verfügbare MA pro Tag/Schicht ermittelt. Kardiologe & Intensiverfahrung geprüft.',dur:500,res:[{c:'sc-ok',t:'31 Tage analysiert'},{c:'sc-warn',t:'3 potentielle Engpässe'},{c:'sc-info',t:'Kardio & Intensiv OK'}]},
+  {id:'B1',title:'B1 — Hochprioritäts-Wünsche',detail:'Freiwünsche und Schichtwünsche Prio Hoch eingearbeitet.',dur:600,res:[{c:'sc-ok',t:'8 Hoch-Wünsche erfüllt'},{c:'sc-warn',t:'2 zurückgestellt'}]},
+  {id:'B2',title:'B2 — Mittel & Niedrig-Wünsche',detail:'Priorisiert nach Lebenskonto-Rang.',dur:700,res:[{c:'sc-ok',t:'14 weitere Wünsche erfüllt'},{c:'sc-warn',t:'4 nicht erfüllbar'},{c:'sc-info',t:'LK als Tiebreaker'}]},
+  {id:'C1',title:'C1 — Nachtblöcke & Wochenenden',detail:'Nachtblöcke Mo–Do / Fr–So verteilt. Max. 2 WE/Monat.',dur:900,res:[{c:'sc-ok',t:'8 Nachtblöcke verteilt'},{c:'sc-ok',t:'WE-Limit eingehalten'},{c:'sc-ok',t:'Erholungszeiten gesetzt'}]},
+  {id:'C2',title:'C2 — NEF / C42 / TNA Schichten',detail:'Gleichmäßig auf qualifizierte OA mit Zusatzqualifikation verteilt.',dur:500,res:[{c:'sc-ok',t:'14 NEF-Schichten verteilt'},{c:'sc-ok',t:'6 C42 besetzt'},{c:'sc-ok',t:'4 TNA besetzt'}]},
+  {id:'C3',title:'C3 — Restliche Schichten auffüllen',detail:'Früh-, Zwischen- und Spätdienste nach Abfolgeregeln und Belastungskoeffizient.',dur:1000,res:[{c:'sc-ok',t:'187 Schichten gesetzt'},{c:'sc-warn',t:'1 Stelle offen'},{c:'sc-ok',t:'Abfolgeregeln eingehalten'}]},
+  {id:'D1',title:'D1 — Fairheitskoeffizient ausgleichen',detail:'Abweichungen > 20% durch Schichttausch ausgeglichen.',dur:700,res:[{c:'sc-ok',t:'Ø Abweichung: 8.3%'},{c:'sc-ok',t:'FK ausgeglichen'},{c:'sc-info',t:'3 Schichten getauscht'}]},
+  {id:'E1',title:'E1 — ArbZG-Regelvalidierung',detail:'Alle Ruhezeiten (10 Std.), Wochenendlimits und Urlaubspuffer final geprüft.',dur:600,res:[{c:'sc-ok',t:'Alle Ruhezeiten OK'},{c:'sc-ok',t:'WE-Limits OK'},{c:'sc-warn',t:'1 Hinweis für Planer'}]},
+  {id:'E2',title:'E2 — Plan fertiggestellt',detail:'Dienstplan vollständig generiert und bereit zur Übernahme.',dur:300,res:[{c:'sc-ok',t:'Plan vollständig'},{c:'sc-ok',t:'Bereit zur Veröffentlichung'}]},
+];
+
+function startAlgo(){
+  if(algoRunning) return;
+  algoRunning=true;
+  document.getElementById('algo-config').style.display='none';
+  document.getElementById('algo-results').style.display='none';
+  document.getElementById('algo-container').style.display='block';
+  document.getElementById('algo-header-title').textContent='Algorithmus läuft...';
+  document.getElementById('algo-progress').style.width='0%';
+  const stepsEl=document.getElementById('algo-steps');
+  stepsEl.innerHTML=ALGO_STEPS.map((s,i)=>`<div class="algo-step pending" id="step-${s.id}"><div class="step-icon si-pending" id="icon-${s.id}">${i+1}</div><div style="flex:1"><div class="step-title">${s.title}</div><div class="step-detail" id="det-${s.id}" style="display:none">${s.detail}</div><div class="step-result" id="res-${s.id}" style="display:none"></div></div></div>`).join('');
+  let elapsed=0;
+  if(algoTimer) clearInterval(algoTimer);
+  algoTimer=setInterval(()=>{elapsed+=0.1;document.getElementById('algo-timer').textContent=elapsed.toFixed(1)+'s';},100);
+  runAlgoStep(0);
+}
+function runAlgoStep(idx){
+  if(idx>=ALGO_STEPS.length){finishAlgo();return;}
+  
+  if(idx>0){const p=ALGO_STEPS[idx-1];document.getElementById('step-'+p.id).className='algo-step done';document.getElementById('icon-'+p.id).className='step-icon si-done';document.getElementById('icon-'+p.id).textContent='✓';}
+  document.getElementById('step-'+s.id).className='algo-step active';
+  document.getElementById('icon-'+s.id).className='step-icon si-active';
+  document.getElementById('icon-'+s.id).textContent='…';
+  document.getElementById('det-'+s.id).style.display='block';
+  document.getElementById('algo-progress').style.width=Math.round(((idx+1)/ALGO_STEPS.length)*100)+'%';
+  document.getElementById('step-'+s.id).scrollIntoView({behavior:'smooth',block:'nearest'});
+  setTimeout(()=>{
+    const re=document.getElementById('res-'+s.id);re.style.display='flex';
+    re.innerHTML=s.res.map(r=>`<span class="step-chip ${r.c}">${r.t}</span>`).join('');
+    runAlgoStep(idx+1);
+  },s.dur);
+}
+function finishAlgo(){
+  algoRunning=false;clearInterval(algoTimer);
+  const last=ALGO_STEPS[ALGO_STEPS.length-1];
+  document.getElementById('step-'+last.id).className='algo-step done';
+  document.getElementById('icon-'+last.id).className='step-icon si-done';
+  document.getElementById('icon-'+last.id).textContent='✓';
+  document.getElementById('algo-progress').style.width='100%';
+  document.getElementById('algo-header-title').textContent='✓ Algorithmus abgeschlossen';
+  setTimeout(()=>{
+    document.getElementById('algo-results').style.display='block';
+    document.getElementById('res-besetzt').textContent='189/190';
+    document.getElementById('res-wunsch').textContent='87%';
+    document.getElementById('res-konflikte').textContent='3';
+    document.getElementById('res-offen').textContent='1';
+    document.getElementById('conflict-section').style.display='block';
+    document.getElementById('conflict-list').innerHTML=`<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border2);font-size:12px"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:4px"></div><div><div style="font-weight:500">Dr. Müller, A. — Nachtdienst 15. Mai</div><div style="color:var(--text3);font-size:11px">Urlaub-Rückkehr: WE danach bereits besetzt — bitte prüfen</div></div></div><div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;font-size:12px"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:4px"></div><div><div style="font-weight:500">OA Spätdienst 22. Mai — 1 Stelle offen</div><div style="color:var(--text3);font-size:11px">Kein qualifizierter OA verfügbar — manuelle Zuweisung nötig</div></div></div>`;
+    document.getElementById('algo-results').scrollIntoView({behavior:'smooth'});
+  },500);
+}
+function acceptPlan(){
+  alert('✓ Plan übernommen und veröffentlicht!\n\nAlle 35 Mitarbeiter erhalten jetzt eine Push-Benachrichtigung.\niCal-Einträge werden automatisch synchronisiert.');
+  showPage('dienstplan');
+  document.getElementById('algo-config').style.display='block';
+  document.getElementById('algo-container').style.display='none';
+  document.getElementById('algo-results').style.display='none';
+}
+
+// ─── EXPORT ───
+function doExport(type){
+  const msgs={
+    'pdf-gesamt':'📄 PDF Gesamtplan wird generiert...\n\n✓ Innere Medizin — 31 Seiten\n✓ Neurologie — 31 Seiten\n✓ UCH — 31 Seiten\n✓ Oberarzt — 31 Seiten\n\nDownload startet...',
+    'pdf-einzel':'📋 PDF Einzelpläne werden generiert...\n\n✓ 35 individuelle Pläne erstellt\n✓ Schichtzeiten und Fachbereich enthalten\n\nDownload als ZIP-Archiv...',
+    'excel':'📊 Excel-Export wird erstellt...\n\n✓ Alle 190 Schichten exportiert\n✓ Lebenskonto-Daten enthalten\n✓ Filterbar nach Fachbereich und MA\n\nDownload: NA_Dienstplan_Mai2026.xlsx',
+    'ical':'📅 iCal-Dateien werden generiert...\n\n✓ 35 individuelle .ics Dateien\n✓ Schichtbezeichnung, Uhrzeit, Ort\n✓ Kompatibel mit Apple Kalender & Google Calendar\n\nDownload als ZIP-Archiv...'
+  };
+  alert(msgs[type]||'Export wird generiert...');
+}
+function renderMAExportList(){
+  
+  const el=document.getElementById('ma-export-list');
+  if(!isAdmin){el.innerHTML='<div style="padding:12px 0;font-size:12px;color:var(--text3)">Nur für Dienstplaner verfügbar</div>';return;}
+  el.innerHTML=MA_PROFILES.slice(0,6).map(m=>`<div class="lr"><div style="width:30px;height:30px;border-radius:50%;background:${m.color}22;border:1px solid ${m.color}44;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${m.color};flex-shrink:0">${m.name.split(' ').pop()[0]}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${m.name}</div><div style="font-size:10px;color:var(--text3)">${m.fach} · ${m.vk} VK</div></div><button class="btn btn-s btn-sm" onclick="alert('iCal für ${m.name} wird exportiert...')">📅 iCal</button></div>`).join('');
+}
+
+// ─── MITARBEITERVERWALTUNG ───
+function setMATab(btn,tab){
+  document.querySelectorAll('#ma-tabs .ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');maFilter=tab;renderMAList();
+}
+function filterMA(q){
+  const cards=document.querySelectorAll('.ma-card');
+  cards.forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q.toLowerCase())?'flex':'none';});
+}
+function renderMAList(){
+  
+  
+  if(!isAdmin){el.innerHTML='<div class="card" style="text-align:center;color:var(--text3);font-size:12px">Nur für Admin / Dienstplaner sichtbar</div>';return;}
+  const filtered=maFilter==='alle'?MA_PROFILES:MA_PROFILES.filter(m=>m.fach.toLowerCase()===maFilter||m.fach.toLowerCase().includes(maFilter));
+  el.innerHTML=filtered.map(m=>{
+    const pct=Math.round(m.fk/25*100);
+    const qualBadges=m.quals.map(q=>`<span style="font-size:9px;border-radius:3px;padding:1px 5px;background:rgba(75,184,212,.15);color:var(--cyan);border:1px solid rgba(75,184,212,.3);font-weight:700">${q}</span>`).join(' ');
+    return `<div class="ma-card" onclick="openMAModal('${m.name}')">
+      <div class="ma-avatar" style="background:${m.color}22;border:1px solid ${m.color}44;color:${m.color}">${m.name.includes('Prof')?'PR':m.name.split(', ')[1]?.[0]||'D'}</div>
+      <div class="ma-info">
+        <div class="ma-name">${m.name}</div>
+        <div class="ma-meta">
+          <span>${m.rolle}</span>
+          <span>·</span><span>${m.fach}</span>
+          <span>·</span><span>${m.vk} VK</span>
+          ${qualBadges?`<span>·</span>${qualBadges}`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+          <div style="font-size:10px;color:var(--text3)">FK:</div>
+          <div class="lk-bar-mini"><div class="lk-fill-mini" style="width:${pct}%;background:${pct>85?'var(--red)':pct>70?'var(--amber)':'var(--cyan)'}"></div></div>
+          <div style="font-size:10px;font-family:var(--mono);color:var(--text2)">${m.fk}</div>
+        </div>
+      </div>
+      <div style="font-size:18px;color:var(--text3)">›</div>
+    </div>`;
+  }).join('');
+}
+function openMAModal(name){
+  document.getElementById('ma-modal').classList.add('open');
+  if(name) document.getElementById('ma-name').value=name;
+}
+function updateMAForm(){
+  const rolle=document.getElementById('ma-rolle').value;
+  const fach=document.getElementById('ma-fach').value;
+  const ina=document.getElementById('ma-ina').value;
+  document.getElementById('innere-sub-field').style.display=fach==='innere'?'block':'none';
+  document.getElementById('oa-quals').style.display=rolle==='oa'?'block':'none';
+  document.getElementById('assi-nef').style.display=(rolle==='assi'||rolle==='fa')?'block':'none';
+  document.getElementById('ina-stations').style.display=ina==='ja'?'block':'none';
+}
+function cycleINA(el,st){
+  const cur=parseInt(el.dataset.st||0);
+  
+  el.dataset.st=next;
+  if(next===0){el.style.background='transparent';el.style.borderColor='var(--border2)';el.style.color='var(--white)';}
+  else if(next===1){el.style.background='rgba(155,89,182,.15)';el.style.borderColor='var(--purple)';el.style.color='var(--purple)';}
+  else{el.style.background='rgba(46,204,113,.15)';el.style.borderColor='var(--green)';el.style.color='var(--green)';}
+}
+function toggleQual(el){
+  const on=el.style.background.includes('rgba(75');
+  el.style.background=on?'transparent':'rgba(75,184,212,.15)';
+  el.style.borderColor=on?'var(--border2)':'var(--cyan)';
+  el.style.color=on?'var(--white)':'var(--cyan)';
+}
+function saveMA(){
+  alert('✓ Mitarbeiterprofil gespeichert!\n\nÄnderungen werden sofort auf allen Geräten synchronisiert.');
+  document.getElementById('ma-modal').classList.remove('open');
+}
+
+// ─── LK ───
+function setLKTab(btn){document.querySelectorAll('#lk-tabs .ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active')}
+function renderLK(){
+  
+  const data=[{n:'Dr. Bauer, E.',fk:22.7,nef:4,esp:3},{n:'Dr. Lange, F.',fk:21.2,nef:1,esp:0},{n:'Dr. Schmidt, B.',fk:19.8,nef:3,esp:2},{n:'Dr. Klein, D.',fk:19.1,nef:2,esp:1},{n:'Dr. Müller, A.',fk:18.4,nef:2,esp:1},{n:'Dr. Weber, C.',fk:14.8,nef:1,esp:0}];
+  const max=data[0].fk;const colors=['var(--red)','var(--amber)','var(--cyan)','var(--cyan)','var(--cyan)','var(--green)'];const rcls=['lr1','lr2','lr3','lrn','lrn','lrn'];
+  
+  const showData=isAdmin?data:data.filter(d=>d.n.includes(myName));
+  document.getElementById('lk-list').innerHTML=showData.map((d,i)=>`<div class="lkr"><div class="lrank ${rcls[isAdmin?i:4]}">${isAdmin?i+1:'—'}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${d.n}</div><div class="lkbar"><div class="lkfill" style="width:${Math.round(d.fk/max*100)}%;background:${colors[isAdmin?i:4]}"></div></div></div><div style="font-family:var(--mono);font-size:11px;color:var(--text2);text-align:right">${d.fk}<br><span style="font-size:9px;color:var(--text3)">NEF:${d.nef} ESP:${d.esp}</span></div></div>`).join('');
+  if(!isAdmin) document.getElementById('lk-mine').textContent=data.find(d=>d.n.includes(myName))?.fk||'—';
+}
+
+// ─── AUSFALL ───
+function renderVorschlaege(){
+  const vs=[{n:'Dr. Weber, C.',sub:'FA Innere · FK: 14.8',chips:[['vco','Qual ✓'],['vco','Abfolge ✓'],['vco','Niedr. Bel.']],cls:'vr1'},{n:'Dr. Klein, D.',sub:'FA Innere · FK: 19.1',chips:[['vco','Qual ✓'],['vcw','FK mittel'],['vcw','Freiwunsch']],cls:'vr2'},{n:'Dr. Lange, F.',sub:'FA Innere · FK: 22.7',chips:[['vco','Qual ✓'],['vce','FK hoch']],cls:'vr3'}];
+  document.getElementById('vlist').innerHTML=vs.map((v,i)=>`<div class="vr"><div class="vrk ${v.cls}">${i+1}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${v.n}</div><div style="font-size:10px;color:var(--text3);margin-top:1px">${v.sub}</div><div style="display:flex;gap:3px;margin-top:3px">${v.chips.map(c=>`<span class="vc ${c[0]}">${c[1]}</span>`).join('')}</div></div><button class="btn btn-sm ${i===0?'btn-p':'btn-s'}" onclick="alert('Anfrage gesendet')">Anfragen</button></div>`).join('');
+}
+
+// ─── PLANER QUEUE ───
+function renderPlanerQueue(){
+  document.getElementById('planer-queue-list').innerHTML=`<div style="padding:12px 0;border-bottom:1px solid var(--border2)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="tausch-status ts-warten">PRÜFEN</span><span style="font-size:11px;color:var(--text3)">Dr. Müller ⇄ Dr. Weber</span></div><div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px"><span class="chip cS">Spät 12.05.</span><span style="color:var(--text3)">⇄</span><span class="chip cF">Früh 13.05.</span></div><div style="font-size:10px;display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap"><span style="color:var(--green)">✓ ArbZG OK</span><span style="color:var(--green)">✓ Ruhezeit 11.5 Std.</span><span style="color:var(--green)">✓ Qualifikation OK</span><span style="color:var(--green)">✓ Besetzung OK</span></div><div style="display:flex;gap:6px"><button class="btn btn-g btn-sm" onclick="alert('✓ Freigegeben! Alle Geräte werden sofort aktualisiert.')">✓ Freigeben</button><button class="btn btn-d btn-sm">✗ Ablehnen</button></div></div><div style="padding:12px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="tausch-status ts-warten">PRÜFEN</span><span style="font-size:11px;color:var(--text3)">Ausschreibung Dr. Klein</span></div><div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px"><span class="chip cN">Nacht 22.05.</span><span style="color:var(--text3)">→</span><span style="font-size:11px;color:var(--text2)">Dr. Schmidt übernimmt</span></div><div style="font-size:10px;display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap"><span style="color:var(--green)">✓ ArbZG OK</span><span style="color:var(--amber)">⚠ Belastung +2.0 Pkt.</span><span style="color:var(--green)">✓ Besetzung OK</span></div><div style="display:flex;gap:6px"><button class="btn btn-g btn-sm" onclick="alert('Freigegeben!')">✓ Freigeben</button><button class="btn btn-d btn-sm">✗ Ablehnen</button></div></div>`;
+}
+
+// ─── WISH CAL ───
+function renderWCal(){
+  const cal=document.getElementById('wcal');
+  const hdrs=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  
+  const first=new Date(2026,5,1).getDay();const off=first===0?6:first-1;
+  for(let i=0;i<off;i++) h+='<div class="wd empty"></div>';
+  const sw={3:'fh',7:'a',10:'s',14:'fm',18:'fb',21:'x',25:'fn',28:'a'};
+  const wl={fh:'F!!!',fm:'F!!',fn:'F!',a:'Arbeit',s:'Früh',x:'Kein N',fb:'Fortb.'};
+  const wc={fh:'wcfh',fm:'wcfm',fn:'wcfn',a:'wca',s:'wcs',x:'wcx',fb:'wcfb'};
+  for(let d=1;d<=30;d++){const w=sw[d];const wh=w?`<span class="wchip ${wc[w]}">${wl[w]}</span>`:'';h+=`<div class="wd${we?' we':''}" onclick="alert('Wunsch: ${d}. Juni')"><div class="wd-n">${d}</div>${wh}</div>`;}
+  cal.innerHTML=h;
+}
+
+// ─── TAUSCH VALIDATION ───
+const SE={F:15*60+45,Z:20*60,S:22*60+30,N:7*60+45+24*60,NT:19*60+30,NN:7*60+30+24*60};
+const SS={F:7*60,Z:11*60,S:14*60,N:22*60,NT:7*60,NN:19*60};
+const AA={F:['F','Z','S','N','NT','NN'],Z:['F','Z','S','N','NT','NN'],S:['Z','S','N','NN'],N:['N','NN'],NT:['F','Z','S','N','NT','NN'],NN:['N','NN']};
+
+function resetTauschCheck(){
+  const res=document.getElementById('tausch-check-result');res.style.display='none';
+  const btn=document.getElementById('tausch-send-btn');btn.style.opacity='1';btn.style.pointerEvents='auto';btn.textContent='Prüfen & Senden';
+}
+function validateAndSend(){
+  const from=document.getElementById('sim-from-modal')?.value;
+  const to=document.getElementById('sim-to-modal')?.value;
+  
+  if(!from||!to){alert('Tauschanfrage gesendet!');closeTauschModal();return;}
+  let rest=SS[to]-(SE[from]%(24*60));if(rest<0)rest+=24*60;
+  const restH=(rest/60).toFixed(1);
+  const errors=[];const checks=[];
+  if(rest<10*60) errors.push(`Unterschreitung der Ruhezeit: nur ${restH} Std. (min. 10 Std. nach TV-Ärzte §7)`);
+  else checks.push(`Ruhezeit: ${restH} Std. ✓`);
+  const allowed=AA[from]||[];
+  if(!allowed.includes(to)) errors.push('Schichtabfolge nicht erlaubt (bestätigte Abfolge-Matrix)');
+  else if(rest>=10*60) checks.push('Schichtabfolge erlaubt ✓');
+  checks.push('Qualifikation geprüft ✓');checks.push('Mindestbesetzung gewährleistet ✓');
+  res.style.display='block';
+  if(errors.length>0){
+    res.style.cssText='display:block;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#F87171';
+    res.innerHTML=`<div style="font-weight:700;margin-bottom:6px">✗ Tausch nicht möglich</div>${errors.map(e=>`<div style="margin-bottom:3px">✗ ${e}</div>`).join('')}<div style="margin-top:6px;font-size:10px;opacity:.8">Bitte wähle eine andere Schichtkombination.</div>`;
+    btn.style.opacity='.4';btn.style.pointerEvents='none';
+  } else {
+    res.style.cssText='display:block;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#4ADE80';
+    res.innerHTML=`<div style="font-weight:700;margin-bottom:6px">✓ Regelkonform — wird gesendet...</div>${checks.map(c=>`<div>✓ ${c}</div>`).join('')}`;
+    setTimeout(()=>{alert('✓ Tauschanfrage gesendet!\nDer Kollege wird benachrichtigt.');closeTauschModal();resetTauschCheck();},1200);
+  }
+}
+function openTauschModal(){document.getElementById('tausch-modal').classList.add('open')}
+function closeTauschModal(){document.getElementById('tausch-modal').classList.remove('open');resetTauschCheck()}
+function selectTauschArt(el,art){
+  document.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');
+  document.getElementById('tausch-kollege-field').style.display=art==='direkt'?'block':'none';
+  document.getElementById('tausch-gegen-field').style.display=art==='direkt'?'block':'none';
+}
+document.getElementById('tausch-modal').addEventListener('click',function(e){if(e.target===this)closeTauschModal()});
+document.getElementById('ma-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+
+
+
+// ═══════════════════════════════════════════
+// LOGIN & AUTH LOGIC
+// ═══════════════════════════════════════════
+
+const TENANT_DOMAINS = {
+  'uksh.de': {name:'UKSH', label:'Universitätsklinikum Schleswig-Holstein'},
+  'helios.de': {name:'Helios', label:'Helios Kliniken'},
+  'demo.de': {name:'Demo', label:'Demo / Sandbox'},
+};
+
+function detectTenant(email){
+  const domain = email.split('@')[1]||'';
+  const tenant = Object.entries(TENANT_DOMAINS).find(([d])=>domain.endsWith(d));
+  const label = document.getElementById('login-tenant-label');
+  if(tenant) label.textContent = '🏥 ' + tenant[1].label;
+  else if(domain) label.textContent = domain + ' — Unbekannte Domain';
+  else label.textContent = 'Klinik wird aus E-Mail erkannt...';
+}
+
+function detectTenantReg(email){
+  
+  
+  const info = document.getElementById('reg-tenant-info');
+  if(tenant) info.textContent = '🏥 ' + tenant[1].label + ' erkannt';
+  else if(domain) info.textContent = '⚠ Unbekannte Domain: ' + domain;
+  else info.textContent = '🏥 Klinik wird aus E-Mail-Domain erkannt';
+}
+
+function showRegistration(){
+  document.getElementById('login-step1').style.display='none';
+  document.getElementById('login-reg').style.display='block';
+}
+function showLogin(){
+  document.getElementById('login-reg').style.display='none';
+  document.getElementById('login-step1').style.display='block';
+}
+
+function submitRegistration(){
+  const email = document.getElementById('reg-email').value;
+  
+  if(!email||!name){alert('Bitte E-Mail und Name angeben.');return;}
+  document.getElementById('login-reg').style.display='none';
+  document.getElementById('login-step1').style.display='block';
+  // Show success
+  const err = document.getElementById('login-error');
+  err.style.background='rgba(46,204,113,.1)';
+  err.style.borderColor='rgba(46,204,113,.3)';
+  err.style.color='var(--green)';
+  err.textContent='✓ Antrag gesendet! Der Dienstplaner wird benachrichtigt und gibt deinen Zugang frei.';
+  err.style.display='block';
+}
+
+function doLogin(){
+  
+  const pw = document.getElementById('login-pw').value;
+  const errEl = document.getElementById('login-error');
+  const acc = DEMO_ACCOUNTS[email];
+  if(!acc||acc.pw!==pw){
+    errEl.style.background='rgba(231,76,60,.1)';errEl.style.borderColor='rgba(231,76,60,.3)';errEl.style.color='var(--red)';
+    errEl.textContent='E-Mail oder Passwort falsch. Bitte erneut versuchen.';
+    errEl.style.display='block';return;
+  }
+  errEl.style.display='none';
+  detectTenant(email);
+  if(acc.firstLogin){
+    document.getElementById('first-login-overlay').style.display='flex';
+    return;
+  }
+  // Go to step 2
+  document.getElementById('step2-name').textContent = acc.name.split(',')[0];
+  document.getElementById('login-step1').style.display='none';
+  document.getElementById('login-step2').style.display='block';
+  // Set default dates
+  const today = new Date().toISOString().split('T')[0];
+  const future = new Date(Date.now()+90*24*60*60*1000).toISOString().split('T')[0];
+  document.getElementById('step2-von').value = today;
+  document.getElementById('step2-bis').value = future;
+  window._pendingLogin = {role:acc.role, email};
+}
+
+function completeStep2(){
+  const login = window._pendingLogin;
+  if(!login) return;
+  document.getElementById('login-step2').style.display='none';
+  completeLogin(login.role, login.email);
+}
+
+function changePassword(){
+  const p1=document.getElementById('new-pw1').value;
+  const p2=document.getElementById('new-pw2').value;
+  
+  if(p1.length<8){err.textContent='Mindestens 8 Zeichen erforderlich.';err.style.display='block';return;}
+  if(p1!==p2){err.textContent='Passwörter stimmen nicht überein.';err.style.display='block';return;}
+  if(!/[A-Z]/.test(p1)||!/[0-9]/.test(p1)){err.textContent='Mind. 1 Großbuchstabe und 1 Zahl erforderlich.';err.style.display='block';return;}
+  document.getElementById('first-login-overlay').style.display='none';
+  
+  
+  const accForStep2=DEMO_ACCOUNTS[document.getElementById('login-email').value.trim()];
+  document.getElementById('step2-name').textContent = accForStep2?.name?.split(',')[0]||'';
+  document.getElementById('login-step1').style.display='none';
+  document.getElementById('login-step2').style.display='block';
+  
+  
+  document.getElementById('step2-von').value=today;
+  document.getElementById('step2-bis').value=future;
+  window._pendingLogin={role:acc?.role||'assi',email};
+}
+
+function completeLogin(role, email){
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('set-email').textContent=email;
+  setRole(role, null);
+  // Show qual confirm for first rotation
+  if(role==='assi'||role==='oa'){
+    renderQualConfirm();
+  }
+}
+
+function doLogout(){
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-step1').style.display='block';
+  document.getElementById('login-step2').style.display='none';
+  document.getElementById('login-reg').style.display='none';
+  document.getElementById('role-sw').classList.remove('open');
+  document.getElementById('login-pw').value='';
+  document.getElementById('login-error').style.display='none';
+}
+
+// ═══════════════════════════════════════════
+// QUALIFIKATIONEN MIT FREIGABE
+// ═══════════════════════════════════════════
+
+const ALL_QUALS = [
+  {key:'nef', label:'Notfallmedizin (NEF)', roles:['fa','oa']},
+  {key:'tna', label:'TNA (Telenotarzt)', roles:['oa']},
+  {key:'c42', label:'Christoph 42', roles:['oa']},
+  {key:'intensiv', label:'Intensiverfahrung', roles:['assi','fa','oa']},
+  {key:'ina', label:'INA-Arzt', roles:['assi','fa']},
+  {key:'kardio', label:'Kardiologie', roles:['fa','oa']},
+];
+let selectedQuals = new Set();
+
+function renderQualConfirm(){
+  const sec = document.getElementById('qual-confirm-section');
+  if(!sec) return;
+  // Only show for first einsatz (demo: always show for assi)
+  if(currentRole!=='assi'&&currentRole!=='oa'){sec.style.display='none';return;}
+  sec.style.display='block';
+  const relevant = ALL_QUALS.filter(q=>q.roles.includes(currentRole==='assi'?'assi':'oa'));
+  document.getElementById('qual-checkboxes').innerHTML = relevant.map(q=>`
+    <div class="qual-check-item" id="qc-${q.key}" onclick="toggleQualCheck('${q.key}')">
+      <div class="qual-check-box" id="qcb-${q.key}"></div>
+      <div style="flex:1"><div style="font-size:13px">${q.label}</div></div>
+    </div>`).join('');
+}
+
+function toggleQualCheck(key){
+  if(selectedQuals.has(key)){selectedQuals.delete(key);document.getElementById('qc-'+key).classList.remove('selected');document.getElementById('qcb-'+key).textContent='';}
+  else{selectedQuals.add(key);document.getElementById('qc-'+key).classList.add('selected');document.getElementById('qcb-'+key).textContent='✓';}
+}
+
+function submitQuals(){
+  if(selectedQuals.size===0){alert('Bitte wähle mindestens eine Qualifikation oder "Keine" aus.');return;}
+  const names=[...selectedQuals].map(k=>ALL_QUALS.find(q=>q.key===k)?.label).join(', ');
+  alert('✓ Qualifikationen eingereicht: '+names+'\n\nDer Dienstplaner wird benachrichtigt und gibt diese einmalig frei.');
+  document.getElementById('qual-confirm-section').style.display='none';
+}
+
+function renderQualFreigabe(){
+  
+  if(!el) return;
+  el.innerHTML = `
+    <div class="lr">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">Dr. Müller, A.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Beantragt: Intensiverfahrung · INA-Arzt</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Eingereicht: 05.05.2026 · INA Notaufnahme</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-g btn-sm" onclick="alert('✓ Qualifikationen freigegeben! Dr. Müller erhält Benachrichtigung.')">✓ Freigeben</button>
+        <button class="btn btn-d btn-sm">✗</button>
+      </div>
+    </div>
+    <div class="lr">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">Dr. Fischer, J.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Beantragt: Notfallmedizin (NEF)</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Eingereicht: 03.05.2026 · INA Innere</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-g btn-sm" onclick="alert('Freigegeben!')">✓ Freigeben</button>
+        <button class="btn btn-d btn-sm">✗</button>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// SCHICHTBEWERTUNG — DRAG & DROP RANGLISTE
+// ═══════════════════════════════════════════
+
+// Schichten die dieser MA gemacht hat (aus MY_SHIFTS)
+const MY_SHIFT_TYPES = ['F','Z','S','N']; // Wird aus echten Schichten befüllt
+
+const ALL_SCHICHTEN = [
+  {key:'F_wt',  label:'Frühdienst Mo–Fr',      koeff:1.0,  time:'07:00–15:45'},
+  {key:'Z_wt',  label:'Zwischendienst Mo–Fr',   koeff:1.1,  time:'11:00–20:00'},
+  {key:'S_fr',  label:'Spätdienst Freitag',     koeff:1.2,  time:'11:00–20:00'},
+  {key:'S_wt',  label:'Spätdienst Mo–Do',       koeff:1.3,  time:'14:00–22:30'},
+  {key:'N_wt',  label:'Nachtdienst Mo–Do',      koeff:2.0,  time:'22:00–07:45'},
+  {key:'F_we',  label:'Tagdienst Sa/So/Ft',     koeff:2.1,  time:'07:00–19:45'},
+  {key:'N_fr',  label:'Nachtdienst Freitag',    koeff:2.3,  time:'19:00–07:45'},
+  {key:'N_we',  label:'Nachtdienst Sa/So/Ft',   koeff:2.5,  time:'19:00–07:45'},
+  // NEF / TNA nur für qualifizierte MA
+  {key:'NT',    label:'NEF-Tag',                koeff:1.05, time:'07:00–19:30', needsQual:['nef']},
+  {key:'NN',    label:'NEF-Nacht',              koeff:1.4,  time:'19:00–07:30', needsQual:['nef']},
+  {key:'TNA',   label:'TNA-Dienst',             koeff:1.35, time:'variabel',    needsQual:['tna']},
+];
+
+// For demo: MA Müller hat diese Schichten gemacht
+const MA_DONE_SHIFTS = ['F_wt','Z_wt','S_wt','N_wt','F_we','N_fr'];
+
+// Current ranking state
+let rankingOrder = [...MA_DONE_SHIFTS]; // starts as initial order
+let dragSrcIdx = null;
+
+const BEW_PHASES = [
+  {id:'monat1', label:'Nach 1 Monat ★'},
+  {id:'naechster', label:'Nächster Einsatz'},
+];
+let bewPhase = 'monat1';
+
+function renderBewertung(){
+  const phases = document.getElementById('bew-phases');
+  if(!phases) return;
+  phases.innerHTML = BEW_PHASES.map(p=>`
+    <button style="flex-shrink:0;padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;
+      border:1px solid ${p.id===bewPhase?'var(--amber)':'var(--border)'};
+      background:${p.id===bewPhase?'var(--amber)':'transparent'};
+      color:${p.id===bewPhase?'var(--navy2)':'var(--text2)'};
+      cursor:pointer;font-family:var(--font)"
+      onclick="setBewPhase('${p.id}')">${p.label}</button>`).join('');
+  renderBewContent();
+  renderQualConfirm();
+}
+
+function setBewPhase(ph){
+  bewPhase=ph;
+  renderBewertung();
+}
+
+function renderBewContent(){
+  const content = document.getElementById('bew-content');
+  const btns = document.getElementById('bew-btns');
+  if(!content) return;
+
+  const isEditable = bewPhase==='monat1';
+  
+
+  // Filter: only shifts the MA has done (+ qual-gated)
+  const myShifts = ALL_SCHICHTEN.filter(s => MA_DONE_SHIFTS.includes(s.key));
+  if(!rankingOrder.length) rankingOrder = myShifts.map(s=>s.key);
+
+  const orderedShifts = rankingOrder.map(k=>myShifts.find(s=>s.key===k)).filter(Boolean);
+  const total = orderedShifts.length;
+
+  let html = '';
+  if(bewPhase==='naechster'){
+    html = '<div class="card" style="text-align:center;color:var(--text3);padding:20px"><div style="font-size:24px;margin-bottom:8px">⏳</div><div style="font-size:13px;font-weight:500;margin-bottom:4px">Nächste Bewertung beim nächsten Einsatz</div><div style="font-size:12px">Beim nächsten Rotationseintritt wirst du erneut gefragt, ob deine vorherige Rangliste noch aktuell ist.</div></div>';
+    content.innerHTML = html;
+    if(btns) btns.style.display='none';
+    return;
+  }
+
+  html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div style="font-size:11px;color:var(--text3)">☰ Ziehen zum Sortieren · Oben = angenehm · Unten = belastend</div>
+    <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">${myShifts.length} Schichten</div>
+  </div>`;
+
+  html += `<ul class="rank-list" id="rank-list">`;
+  orderedShifts.forEach((s,i)=>{
+    
+    const numCls = i===0?'rn-1':i===1?'rn-2':i===2?'rn-3':i===total-1?'rn-bot':'rn-mid';
+    html += `<li class="rank-item" draggable="true" data-key="${s.key}"
+      ondragstart="dndStart(event,${i})" ondragover="dndOver(event,${i})" ondrop="dndDrop(event,${i})" ondragend="dndEnd(event)">
+      <div class="rank-handle">⠿</div>
+      <div class="rank-num ${numCls}">${i+1}</div>
+      <div style="flex:1">
+        <div class="rank-label">${s.label}</div>
+        <div class="rank-sub">${s.time}</div>
+      </div>
+      <div class="team-rank-bar"><div class="team-rank-fill" style="width:${pct}%"></div></div>
+      <div class="rank-coeff">Stat: ${s.koeff.toFixed(2)}</div>
+    </li>`;
+  });
+  html += `</ul>`;
+
+  // Legend
+  html += `<div style="display:flex;gap:8px;margin-top:8px;font-size:10px;color:var(--text3)">
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Angenehm</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>Mittel</div>
+    <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>Belastend</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:4px"><div style="width:30px;height:3px;background:var(--amber);border-radius:2px"></div>Team-Ø</div>
+  </div>`;
+
+  // Admin: Team overview
+  if(isAdmin){
+    html += `<div class="card" style="margin-top:10px;padding:14px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Team-Auswertung · Aktuelle dynamische Koeffizienten</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Durchschnitt aller Bewertungen nach Ablauf des ersten Monats. Der Algorithmus verwendet diese Werte dynamisch.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">`;
+    myShifts.forEach(s=>{
+      const teamRank = myShifts.length - myShifts.indexOf(s); // simulated
+      const dynCoeff = (s.koeff * (1 + (Math.random()*0.1-0.05))).toFixed(2);
+      const diff = ((dynCoeff - s.koeff)/s.koeff*100).toFixed(0);
+      const color = diff>3?'var(--amber)':diff<-3?'var(--green)':'var(--text2)';
+      html += `<div style="background:var(--navy4);border-radius:var(--r-sm);padding:8px 10px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:2px">${s.label}</div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <div style="font-size:16px;font-weight:300;font-family:var(--mono)">${dynCoeff}</div>
+          <div style="font-size:10px;color:${color}">${diff>0?'+':''}${diff}%</div>
+        </div>
+        <div style="font-size:9px;color:var(--text3)">Statisch: ${s.koeff.toFixed(2)} · 31 Bewertungen</div>
+      </div>`;
+    });
+    html += `</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Letzte Aktualisierung: 28. Apr 2026 · Nächste Runde: 31. Mai 2026</div>
+    </div>`;
+  }
+
+  content.innerHTML = html;
+  if(btns) btns.style.display = isEditable?'flex':'none';
+}
+
+// ─── DRAG & DROP ───
+function dndStart(e, idx){
+  dragSrcIdx = idx;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dndOver(e, idx){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.rank-item').forEach(el=>el.classList.remove('drag-over'));
+  e.currentTarget.classList.add('drag-over');
+}
+function dndDrop(e, idx){
+  e.preventDefault();
+  if(dragSrcIdx===null||dragSrcIdx===idx) return;
+  const moved = rankingOrder.splice(dragSrcIdx,1)[0];
+  rankingOrder.splice(idx,0,moved);
+  renderBewContent();
+}
+function dndEnd(e){
+  dragSrcIdx=null;
+  document.querySelectorAll('.rank-item').forEach(el=>{el.classList.remove('dragging');el.classList.remove('drag-over');});
+}
+
+function saveBewertung(){
+  const names = rankingOrder.map((k,i)=>{
+    const s = ALL_SCHICHTEN.find(x=>x.key===k);
+    return (i+1)+'. '+(s?s.label:k);
+  }).join('\n');
+  alert('Rangliste gespeichert!\n\n'+names+'\n\nDeine Bewertung fließt in den dynamischen Koeffizienten ein.');
+  showPage('dashboard');
+}
+
+
+// ─── QUAL FREIGABE PLANER ───
+function renderRegPending(){
+  const el = document.getElementById('reg-pending-list');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="reg-pending-card"><div style="font-size:18px;flex-shrink:0">👤</div><div style="flex:1"><div style="font-size:13px;font-weight:500">Dr. Neumann, K.</div><div style="font-size:11px;color:var(--text2)">neumann.k@uksh.de · INA Notaufnahme</div><div style="font-size:10px;color:var(--text3);margin-top:2px">Antrag vom 05.05.2026</div></div><div style="display:flex;flex-direction:column;gap:4px"><button class="btn btn-g btn-sm" onclick="alert('Zugang freigegeben! Passwort per E-Mail gesendet.')">Freigeben</button><button class="btn btn-d btn-sm">Ablehnen</button></div></div>`;
+}
+
+
+// ─── DEMO ACCOUNTS ───
+const DEMO_ACCOUNTS = {
+  'mueller.anna@uksh.de':  {pw:'Temp1234!', firstLogin:true,  role:'assi',       name:'Dr. Müller, A.',   initials:'MA'},
+  'weber.c@uksh.de':       {pw:'Pass2025!', firstLogin:false, role:'oa',         name:'Dr. Weber, C.',    initials:'WC'},
+  'richter.g@uksh.de':     {pw:'Plan2025!', firstLogin:false, role:'planer',     name:'Dr. Richter, G.',  initials:'RG'},
+  'hoffmann.prof@uksh.de': {pw:'Admin123!', firstLogin:false, role:'superadmin', name:'Prof. Hoffmann',   initials:'PH'},
+};
+
+// ─── ROLES (extend existing) ───
+ROLES_DATA['superadmin'] = {label:'SUPER-ADMIN', cls:'trole-superadmin', name:'Prof. Hoffmann', roleTxt:'System-Administrator · Alle Kliniken', email:'hoffmann.prof@uksh.de'};
+
+// ─── LOGIN ───
+function selectTenant(el){document.querySelectorAll('.tenant-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+
+// ─── SCHICHTBEWERTUNG ───
+const SCHICHTEN_BEW = [
+  {key:'F_wt',  label:'Frühdienst Mo–Fr',         staticVal:1.0},
+  {key:'NT',    label:'NEF-Tag',                   staticVal:1.05},
+  {key:'Z_wt',  label:'Zwischendienst Mo–Fr',      staticVal:1.1},
+  {key:'S_fr',  label:'Spätdienst Freitag',        staticVal:1.2},
+  {key:'S_wt',  label:'Spätdienst Mo–Do',          staticVal:1.3},
+  {key:'NN',    label:'NEF-Nacht',                 staticVal:1.4},
+  {key:'Z_we',  label:'Zwischen Sa/So/Ft',         staticVal:1.5},
+  {key:'N_wt',  label:'Nachtdienst Mo–Do',         staticVal:2.0},
+  {key:'F_we',  label:'Tagdienst Sa/So/Ft',        staticVal:2.1},
+  {key:'N_fr',  label:'Nachtdienst Freitag',       staticVal:2.3},
+  {key:'N_we',  label:'Nachtdienst Sa/So/Ft',      staticVal:2.5},
+];
+
+const BEW_DATA = {
+  eintritt:{F_wt:1.2,NT:1.1,Z_wt:1.3,S_fr:1.4,S_wt:1.5,NN:1.6,Z_we:1.8,N_wt:2.3,F_we:2.2,N_fr:2.6,N_we:3.0},
+  monat1:  {F_wt:1.1,NT:1.0,Z_wt:1.2,S_fr:1.3,S_wt:1.4,NN:1.5,Z_we:1.7,N_wt:2.1,F_we:2.2,N_fr:2.4,N_we:2.8},
+  aktuell: {F_wt:1.0,NT:1.05,Z_wt:1.1,S_fr:1.2,S_wt:1.3,NN:1.4,Z_we:1.5,N_wt:2.0,F_we:2.1,N_fr:2.3,N_we:2.5},
+  ende:    {},
+};
+const TEAM_AVG = {F_wt:1.05,NT:1.08,Z_wt:1.15,S_fr:1.25,S_wt:1.35,NN:1.42,Z_we:1.55,N_wt:2.05,F_we:2.15,N_fr:2.35,N_we:2.55};
+
+</script>
+</body>
+</html><!-- SCHICHTBEWERTUNG -->
+<div class="page" id="page-bewertung">
+  <div style="font-size:10px;color:var(--text3);margin-bottom:8px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px">SCHICHTBEWERTUNG — BELASTUNGSRANGLISTE</div>
+
+  <!-- Info card -->
+  <div class="card" style="margin-bottom:10px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:4px">Wie funktioniert das?</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6">Bringe die Schichten die du gemacht hast per Drag & Drop in die Reihenfolge ihrer Belastung — von der angenehmsten (oben) zur belastendsten (unten). Nur deine tatsächlich geleisteten Schichten erscheinen. Deine Rangliste wird mit dem Team-Durchschnitt verglichen und fließt dynamisch in den Fairheitskoeffizienten ein.</div>
+  </div>
+
+  <!-- Timing info -->
+  <div style="background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+    <div style="font-size:18px">📅</div>
+    <div>
+      <div style="font-size:12px;font-weight:600;color:var(--amber)">Bewertungszeitraum: Ende 1. Monat</div>
+      <div style="font-size:11px;color:var(--text3)">Nächste Bewertung: 31. Mai 2026 · Du wirst per Push benachrichtigt</div>
+    </div>
+  </div>
+
+  <!-- Qual confirmation (shown if first time or new rotation) -->
+  <div id="qual-confirm-section" style="display:none">
+    <div class="card" style="border-color:var(--cyan);margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--cyan)">✓ Qualifikationen bestätigen</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Bitte wähle deine aktuellen Qualifikationen. Der Dienstplaner gibt diese einmalig frei.</div>
+      <div id="qual-checkboxes" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text3);padding:8px 10px;background:var(--navy4);border-radius:var(--r-sm)">
+        ℹ Nach Freigabe durch den Dienstplaner werden deine Qualifikationen beim nächsten Einsatz nur noch bestätigt, nicht erneut geprüft.
+      </div>
+      <button onclick="submitQuals()" class="btn btn-p" style="width:100%;margin-top:10px">Qualifikationen zur Freigabe einreichen</button>
+    </div>
+  </div>
+
+  <!-- Phase tabs -->
+  <div style="display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none" id="bew-phases"></div>
+
+  <!-- Drag & Drop ranking -->
+  <div id="bew-content"></div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px" id="bew-btns">
+    <button class="btn btn-p" onclick="saveBewertung()">Rangliste speichern</button>
+    <button class="btn btn-s" onclick="showPage('dashboard')">Später</button>
+  </div>
+</div>
+
+<!-- QUAL FREIGABE (Planer) -->
+<div class="page" id="page-qual-freigabe">
+  <div style="font-size:10px;color:var(--text3);margin-bottom:8px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px">QUALIFIKATIONS-FREIGABE · DIENSTPLANER</div>
+  <div class="card" style="padding:0 14px" id="qual-freigabe-list"></div>
+</div>
+
+
